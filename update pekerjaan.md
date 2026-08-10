@@ -448,5 +448,22 @@ Dokumen ini mencatat secara sistematis seluruh perubahan file, penambahan fitur,
 
 > 🎯 **Divisi 4 (Finance & Accounting): 100% PASS (17/17 Test Cases).**
 
+---
+
+## 📅 Tanggal: 10 Agustus 2026
+
+### 1. Penambahan & Pembaruan File
+
+#### 📄 [NEW] `panduangit.md`
+- **Tujuan**: Menyediakan dokumen panduan kerja lengkap pengelolaan Git & GitHub untuk repository ini.
+- **Detail Isi**:
+  - Panduan inisialisasi Git dari nol dan pendaftaran remote repository.
+  - Penjelasan konsep branching (`dev-erlangga`) untuk keamanan pengerjaan fitur baru.
+  - Alur kerja harian (Stage, Commit, Push).
+  - Tata cara melakukan undo/restore jika kodingan mengalami kesalahan.
+  - Tata cara merge cabang fitur kembali ke branch `main`.
+  - Cheat sheet ringkas perintah terminal Git.
+
+
 
 
