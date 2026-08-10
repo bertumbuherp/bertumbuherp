@@ -175,8 +175,18 @@ export function BODFinancialReportView() {
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs space-y-2">
           <p className="font-bold text-slate-900 uppercase">3. REKOMENDASI STRATEGIS UNTUK BOARD OF DIRECTORS (BOD)</p>
           <ul className="list-disc pl-4 space-y-1 text-gray-700">
-            <li>Kinerja profitabilitas perusahaan pada periode {reportPeriod} berada pada tingkat sehat dengan Net Profit Margin <strong>{netMarginPct}%</strong>.</li>
-            <li>Arus kas masuk dari pelunasan invoice berjalan lancar tanpa indikasi bad debt yang signifikan.</li>
+            <li>
+              Kinerja profitabilitas perusahaan pada periode {reportPeriod} berada dalam kondisi{' '}
+              <strong className={netMarginPct < 0 ? 'text-red-600 uppercase font-black' : netMarginPct < 15 ? 'text-amber-600 font-bold' : 'text-emerald-600 font-bold'}>
+                {netMarginPct < 0 ? 'KRITIS (Rugi Operasional)' : netMarginPct < 15 ? 'MODERAT / PERLU PERHATIAN' : 'SEHAT'}
+              </strong>{' '}
+              dengan Net Profit Margin <strong>{netMarginPct}%</strong>.
+            </li>
+            {netMarginPct < 0 ? (
+              <li className="text-red-700 font-medium">⚠️ PERINGATAN DIREKSI: Diperlukan penghematan beban operasional SGA secara ketat dan audit percepatan arus penagihan piutang klien.</li>
+            ) : (
+              <li>Arus kas masuk dari pelunasan invoice berjalan lancar tanpa indikasi bad debt yang signifikan.</li>
+            )}
             <li>Disarankan untuk meningkatkan alokasi reinvestasi pada teknologi AI &amp; kapasitas SDM produksi untuk menjaga margin di kuartal berikutnya.</li>
           </ul>
         </div>

@@ -22,6 +22,12 @@ export default function LoginPage() {
   const [signupEmail, setSignupEmail] = useState('');
   const [signupOrg, setSignupOrg] = useState('');
 
+  // Modal & Dialog states (BUG-001 & BUG-002)
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotEmailInput, setForgotEmailInput] = useState('');
+  const [forgotSubmitted, setForgotSubmitted] = useState(false);
+  const [legalModalContent, setLegalModalContent] = useState<'terms' | 'privacy' | null>(null);
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); setError('');
@@ -36,7 +42,13 @@ export default function LoginPage() {
 
   const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Fitur Sign Up sedang dalam tahap pengembangan. Silakan gunakan akun Demo.');
+    alert(`🎉 Permohonan Demo Agensi Terkirim!\n\nTerima kasih, ${signupName} dari ${signupOrg}.\nTim Bertumbuh ERP akan mengirimkan kredensial pengujian ke email ${signupEmail}.\n\nUntuk pengujian instan, Anda dapat beralih ke tab "Masuk" dan menggunakan Tombol Akses Cepat Demo.`);
+  };
+
+  const handleForgotSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmailInput) return;
+    setForgotSubmitted(true);
   };
 
   const features = [
@@ -102,28 +114,34 @@ export default function LoginPage() {
             <span className="font-bold text-2xl" style={{ color: 'var(--text-primary)' }}>Bertumbuh ERP</span>
           </div>
 
+          {/* Demo Sandbox Banner (BUG-004) */}
+          <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-2 text-xs text-amber-800 font-semibold shadow-xs">
+            <span className="px-2 py-0.5 bg-amber-200 text-amber-900 rounded font-black text-[10px]">DEMO ACCESS</span>
+            <span>Lingkungan Sandbox Aktif — Pilih role akun di bawah untuk uji coba.</span>
+          </div>
+
           {/* Tabs */}
           <div className="flex w-full mb-8 bg-gray-100 p-1 rounded-xl">
             <button 
-              className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === 'login' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all cursor-pointer ${activeTab === 'login' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
               onClick={() => { setActiveTab('login'); setError(''); }}
             >
               Masuk
             </button>
             <button 
-              className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === 'signup' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all cursor-pointer ${activeTab === 'signup' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
               onClick={() => { setActiveTab('signup'); setError(''); }}
             >
-              Daftar Baru
+              Ajukan Demo
             </button>
           </div>
 
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-2 text-gray-900">
-              {activeTab === 'login' ? 'Selamat Datang Kembali!' : 'Mulai Bersama Kami'}
+              {activeTab === 'login' ? 'Selamat Datang Kembali!' : 'Ajukan Akses Demo Agensi'}
             </h2>
             <p className="text-sm text-gray-500">
-              {activeTab === 'login' ? 'Silakan masukkan kredensial Anda untuk masuk ke sistem.' : 'Daftarkan agensi Anda untuk menikmati kemudahan operasional.'}
+              {activeTab === 'login' ? 'Silakan masukkan kredensial Anda untuk masuk ke sistem.' : 'Daftarkan agensi Anda untuk berkonsultasi & mencoba sistem ERP.'}
             </p>
           </div>
 
@@ -141,14 +159,24 @@ export default function LoginPage() {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-sm font-semibold text-gray-700">Kata Sandi</label>
-                  <button type="button" className="text-xs font-semibold text-red-600 hover:text-red-700">Lupa sandi?</button>
+                  <button 
+                    type="button" 
+                    onClick={() => { setShowForgotModal(true); setForgotSubmitted(false); setForgotEmailInput(email); }} 
+                    className="text-xs font-semibold text-red-600 hover:text-red-700 cursor-pointer"
+                  >
+                    Lupa sandi?
+                  </button>
                 </div>
                 <div className="relative">
                   <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input type={showPwd ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
                     className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-red-500 transition-colors" placeholder="••••••••" required />
-                  <button type="button" onClick={() => setShowPwd(!showPwd)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPwd(!showPwd)}
+                    aria-label={showPwd ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 cursor-pointer"
+                  >
                     {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
@@ -161,29 +189,29 @@ export default function LoginPage() {
               )}
 
               <button type="submit" disabled={loading}
-                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-red-600/20 mt-4 disabled:opacity-70 disabled:cursor-not-allowed">
+                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-red-600/20 mt-4 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer">
                 {loading
                   ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   : <><LogIn size={18} /><span>Masuk ke ERP</span></>}
               </button>
 
-              {/* Demo Accounts Wrapper for fast testing */}
+              {/* Demo Accounts Wrapper */}
               <div className="pt-6 mt-6 border-t border-gray-100">
                 <p className="text-xs font-semibold text-gray-500 mb-3 text-center uppercase tracking-wider">Akses Cepat Mode Demo</p>
                 <div className="flex flex-wrap gap-2 justify-center">
-                  <button type="button" onClick={() => { setEmail('reza@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200">Owner</button>
-                  <button type="button" onClick={() => { setEmail('dewi@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200">PM</button>
-                  <button type="button" onClick={() => { setEmail('hadi@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200">Finance</button>
-                  <button type="button" onClick={() => { setEmail('andi@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200">AE (CRM)</button>
-                  <button type="button" onClick={() => { setEmail('siti@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200">HR</button>
-                  <button type="button" onClick={() => { setEmail('risa@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-blue-50 text-blue-700 font-bold py-1.5 px-3 rounded-md hover:bg-blue-100 border border-blue-200">Karyawan</button>
+                  <button type="button" onClick={() => { setEmail('reza@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200 cursor-pointer">Owner</button>
+                  <button type="button" onClick={() => { setEmail('dewi@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200 cursor-pointer">PM</button>
+                  <button type="button" onClick={() => { setEmail('hadi@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200 cursor-pointer">Finance</button>
+                  <button type="button" onClick={() => { setEmail('andi@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200 cursor-pointer">AE (CRM)</button>
+                  <button type="button" onClick={() => { setEmail('siti@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200 cursor-pointer">HR</button>
+                  <button type="button" onClick={() => { setEmail('risa@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-blue-50 text-blue-700 font-bold py-1.5 px-3 rounded-md hover:bg-blue-100 border border-blue-200 cursor-pointer">Karyawan</button>
                 </div>
               </div>
             </form>
           ) : (
             <form onSubmit={handleSignupSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Nama Lengkap</label>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Nama Lengkap Pemohon</label>
                 <input type="text" value={signupName} onChange={e => setSignupName(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-red-500 transition-colors" placeholder="Budi Santoso" required />
               </div>
@@ -205,18 +233,98 @@ export default function LoginPage() {
               </div>
 
               <button type="submit"
-                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-6">
-                Buat Akun Gratis
+                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-6 cursor-pointer">
+                Ajukan Demo Agensi ↗
               </button>
               
               <p className="text-xs text-center text-gray-500 mt-4 leading-relaxed">
-                Dengan mendaftar, Anda menyetujui <a href="#" className="text-red-600 hover:underline">Syarat & Ketentuan</a> serta <a href="#" className="text-red-600 hover:underline">Kebijakan Privasi</a> kami.
+                Dengan mengajukan demo, Anda menyetujui{' '}
+                <button type="button" onClick={() => setLegalModalContent('terms')} className="text-red-600 hover:underline font-medium cursor-pointer">Syarat &amp; Ketentuan</button>{' '}
+                serta{' '}
+                <button type="button" onClick={() => setLegalModalContent('privacy')} className="text-red-600 hover:underline font-medium cursor-pointer">Kebijakan Privasi</button> kami.
               </p>
             </form>
           )}
 
         </div>
       </div>
+
+      {/* Modal Reset Password (BUG-001) */}
+      {showForgotModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 fade-in">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h3 className="font-bold text-lg text-gray-800">Pemulihan Kata Sandi</h3>
+              <button onClick={() => setShowForgotModal(false)} className="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+            </div>
+            
+            {forgotSubmitted ? (
+              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-2 text-emerald-800">
+                <p className="font-bold text-sm">✅ Tautan Reset Terkirim!</p>
+                <p>Instruksi pemulihan kata sandi telah dikirim ke <strong>{forgotEmailInput}</strong>. Silakan periksa kotak masuk atau folder spam email Anda.</p>
+                <button onClick={() => setShowForgotModal(false)} className="w-full mt-3 btn-primary py-2 text-xs font-bold rounded-lg">Tutup</button>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotSubmit} className="space-y-4">
+                <p className="text-xs text-gray-600">Masukkan email terdaftar Anda untuk menerima tautan pemulihan kata sandi akun ERP.</p>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Email Terdaftar</label>
+                  <input 
+                    type="email" 
+                    value={forgotEmailInput} 
+                    onChange={e => setForgotEmailInput(e.target.value)} 
+                    placeholder="email@agensi.id" 
+                    className="w-full px-3 py-2 border rounded-xl text-sm focus:outline-red-500" 
+                    required 
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-2 border-t">
+                  <button type="button" onClick={() => setShowForgotModal(false)} className="px-4 py-2 text-xs font-bold text-gray-600 bg-gray-100 rounded-xl">Batal</button>
+                  <button type="submit" className="btn-primary px-5 py-2 text-xs font-bold rounded-xl shadow-md">Kirim Tautan Reset</button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal Legal Documents (BUG-002) */}
+      {legalModalContent && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 fade-in max-h-[85vh] flex flex-col">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h3 className="font-bold text-lg text-gray-800">
+                {legalModalContent === 'terms' ? 'Syarat & Ketentuan Layanan' : 'Kebijakan Privasi & Keamanan Data'}
+              </h3>
+              <button onClick={() => setLegalModalContent(null)} className="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+            </div>
+            <div className="overflow-y-auto text-xs space-y-3 text-gray-600 pr-1 flex-1">
+              {legalModalContent === 'terms' ? (
+                <>
+                  <p className="font-bold text-gray-900">1. Ketentuan Penggunaan Sistem Bertumbuh ERP</p>
+                  <p>Pengguna menyetujui untuk menggunakan sistem operasi ini hanya untuk keperluan manajemen operasional, proyek, CRM, dan akuntansi internal agensi yang sah.</p>
+                  <p className="font-bold text-gray-900">2. Hak Akses &amp; Kerahasiaan Akun</p>
+                  <p>Setiap akun pengguna terikat pada role-based access control (RBAC). Pengguna bertanggung jawab penuh atas kerahasiaan kata sandi dan seluruh aktivitas yang terjadi di bawah akun bersangkutan.</p>
+                  <p className="font-bold text-gray-900">3. Pembatasan Tanggung Jawab</p>
+                  <p>Sistem disediakan dalam kondisi sandbox/production terkontrol. Bertumbuh ERP tidak bertanggung jawab atas kerugian operasional akibat kesalahan pengisian data manual pengguna.</p>
+                </>
+              ) : (
+                <>
+                  <p className="font-bold text-gray-900">1. Perlindungan Data Organisasi</p>
+                  <p>Seluruh data transaksi keuangan, invoice, daftar klien, dan rekaman gaji karyawan disimpan secara terenkripsi dengan prinsip isolasi multi-tenant yang ketat.</p>
+                  <p className="font-bold text-gray-900">2. Penggunaan Data Operasional</p>
+                  <p>Bertumbuh ERP tidak pernah menjual atau membagikan data operasional agensi Anda kepada pihak ketiga mana pun tanpa persetujuan tertulis resmi.</p>
+                  <p className="font-bold text-gray-900">3. Keamanan Transaksi &amp; Audit Trail</p>
+                  <p>Setiap penambahan, pengubahan, dan penghapusan entri jurnal akuntansi dan payroll dicatat secara otomatis dalam sistem audit log terpusat.</p>
+                </>
+              )}
+            </div>
+            <div className="pt-3 border-t flex justify-end">
+              <button onClick={() => setLegalModalContent(null)} className="btn-primary px-5 py-2 text-xs font-bold rounded-xl">Mengerti &amp; Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

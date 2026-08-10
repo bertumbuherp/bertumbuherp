@@ -7,8 +7,8 @@ import { formatDate } from '@/lib/utils';
 
 // Mock DB for history
 const mockHistory = [
-  { id: 'h1', projectId: 'p1', clientName: 'PT Maju Bersama', date: '2024-05-15T10:00:00Z', format: 'WhatsApp' },
-  { id: 'h2', projectId: 'p2', clientName: 'Kopi Nusantara', date: '2024-05-20T14:30:00Z', format: 'PDF' },
+  { id: 'h1', projectId: 'p1', clientName: 'PT Maju Bersama', date: '2026-05-15T10:00:00Z', format: 'WhatsApp' },
+  { id: 'h2', projectId: 'p2', clientName: 'Kopi Nusantara', date: '2026-05-20T14:30:00Z', format: 'PDF' },
 ];
 
 export default function ReportGeneratorPage() {
@@ -57,17 +57,28 @@ export default function ReportGeneratorPage() {
 
   const handleDownloadPDF = () => {
     if (!selectedProject) return;
-    setHistoryList([{ id: `h-${Date.now()}`, projectId: selectedProject.id, clientName: selectedProject.clientName, date: new Date().toISOString(), format: 'PDF' }, ...historyList]);
-    alert('Simulasi: Mendownload Report.pdf...');
+    const newHist = { id: `h-${Date.now()}`, projectId: selectedProject.id, clientName: selectedProject.clientName, date: new Date().toISOString(), format: 'PDF' };
+    setHistoryList([newHist, ...historyList]);
+    
+    // Create printable document blob
+    const element = document.createElement("a");
+    const content = `=====================================================\nLAPORAN PROGRES PROYEK: ${selectedProject.name}\nKLIEN: ${selectedProject.clientName}\nTANGGAL CETAK: ${new Date().toLocaleDateString('id-ID')}\n=====================================================\n\n${reportText}\n\n=====================================================\nBERTUMBUH ERP - CREATIVE AGENCY SYSTEM\n=====================================================`;
+    const file = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    element.href = URL.createObjectURL(file);
+    element.download = `Laporan_Proyek_${selectedProject.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   };
 
   const handleDownloadTxt = (historyItem: any) => {
-    // Simulate downloading txt
+    const proj = projects.find(p => p.id === historyItem.projectId);
     const element = document.createElement("a");
-    const file = new Blob([`Report generated on ${formatDate(historyItem.date)}\nClient: ${historyItem.clientName}\n\n[Konten laporan direkam di sistem...]`], {type: 'text/plain'});
+    const content = `=====================================================\nLAPORAN RIWAYAT PROYEK: ${proj?.name || historyItem.clientName}\nKLIEN: ${historyItem.clientName}\nTANGGAL DIKELUARKAN: ${formatDate(historyItem.date)}\n=====================================================\n\n- Format Ekspor: ${historyItem.format}\n- Status: Archived in System Log\n\nTerima kasih atas kerja samanya.`;
+    const file = new Blob([content], { type: 'text/plain;charset=utf-8' });
     element.href = URL.createObjectURL(file);
-    element.download = `Report_${historyItem.clientName}_${historyItem.date.split('T')[0]}.txt`;
-    document.body.appendChild(element); // Required for this to work in FireFox
+    element.download = `Report_Riwayat_${historyItem.clientName.replace(/\s+/g, '_')}_${historyItem.date.split('T')[0]}.txt`;
+    document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
   };

@@ -2,10 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import { Settings as SettingsIcon, Bell, Lock, User, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function SettingsView({ role }: { role: string }) {
+  const { session } = useAuth();
   const [activeTab, setActiveTab] = useState('profil');
   const [toast, setToast] = useState('');
+
+  const [nameInput, setNameInput] = useState(session?.name || `Pengguna ${role}`);
+  const userEmail = session?.email || `${role.toLowerCase().replace(/[^a-z0-9]/g, '')}@bertumbuh.id`;
+
+  useEffect(() => {
+    if (session?.name) {
+      setNameInput(session.name);
+    }
+  }, [session]);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -41,7 +52,7 @@ export function SettingsView({ role }: { role: string }) {
               onClick={() => setActiveTab('keamanan')}
               className={`w-full flex items-center gap-3 px-4 py-3 font-medium rounded-xl transition-colors text-sm ${activeTab === 'keamanan' ? 'bg-white text-blue-600 shadow-sm border border-blue-100' : 'hover:bg-white text-gray-600 border border-transparent'}`}
             >
-              <Lock size={18} /> Keamanan & Password
+              <Lock size={18} /> Keamanan &amp; Password
             </button>
             <button 
               onClick={() => setActiveTab('sistem')}
@@ -59,8 +70,8 @@ export function SettingsView({ role }: { role: string }) {
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Foto Profil</label>
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
-                        <User size={24} />
+                      <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md">
+                        {session?.avatarInitials || role.charAt(0)}
                       </div>
                       <button onClick={() => showToast('Fitur unggah foto belum tersedia.')} className="btn-secondary px-4 py-2 text-sm">Ubah Foto</button>
                     </div>
@@ -68,13 +79,23 @@ export function SettingsView({ role }: { role: string }) {
                   
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" defaultValue={`Pengguna ${role}`} />
+                    <input 
+                      type="text" 
+                      value={nameInput} 
+                      onChange={e => setNameInput(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" 
+                    />
                   </div>
                   
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Alamat Email</label>
-                    <input type="email" className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" defaultValue={`${role.toLowerCase().replace(' ', '')}@bertumbuh.id`} disabled />
-                    <p className="text-xs text-gray-500 mt-1">Email perusahaan tidak dapat diubah secara mandiri.</p>
+                    <input 
+                      type="email" 
+                      value={userEmail}
+                      className="w-full bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-600 font-semibold cursor-not-allowed" 
+                      disabled 
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Email perusahaan terikat pada SSO &amp; domain agensi.</p>
                   </div>
 
                   <div>

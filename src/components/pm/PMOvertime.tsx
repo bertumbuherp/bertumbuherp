@@ -12,8 +12,15 @@ const STATUS_CONFIG: Record<string, { icon: any, color: string, bg: string, labe
 };
 
 export default function PMOvertime() {
-  const { overtimes, updateOvertimeStatus } = useHRStore();
+  const { overtimes, addOvertime, updateOvertimeStatus } = useHRStore();
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'declined'>('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Form state
+  const [userName, setUserName] = useState('');
+  const [durationHours, setDurationHours] = useState(3);
+  const [reason, setReason] = useState('');
+  const [date, setDate] = useState('2026-06-15');
 
   const filtered = overtimes.filter(ot => filter === 'all' || ot.status === filter);
   const totalHours = overtimes.reduce((s, ot) => s + ot.durationHours, 0);
@@ -22,6 +29,30 @@ export default function PMOvertime() {
 
   // Group by unique employee names for the summary
   const uniqueEmployees = Array.from(new Set(overtimes.map(ot => ot.userName)));
+
+  const handleCreateOvertime = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userName.trim() || !reason.trim() || durationHours <= 0) {
+      alert('Mohon isi nama anggota tim, alasan lembur, dan jumlah jam.');
+      return;
+    }
+
+    addOvertime({
+      id: `ot-${Date.now()}`,
+      userId: `u-${Date.now()}`,
+      userName,
+      projectId: 'p1',
+      date: `${date}T18:00`,
+      durationHours: Number(durationHours),
+      reason,
+      status: 'pending'
+    });
+
+    setUserName('');
+    setReason('');
+    setDurationHours(3);
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="space-y-5 fade-in">
@@ -45,14 +76,14 @@ export default function PMOvertime() {
         <div className="flex gap-1 p-1 rounded-lg" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
           {(['all', 'pending', 'approved', 'declined'] as const).map(s => (
             <button key={s} onClick={() => setFilter(s)}
-              className="px-3 py-1.5 rounded-md text-xs font-medium transition-all"
+              className="px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer"
               style={{ background: filter === s ? 'var(--red)' : 'transparent', color: filter === s ? 'white' : 'var(--text-muted)' }}>
               {s === 'all' ? 'Semua' : STATUS_CONFIG[s].label}
             </button>
           ))}
         </div>
-        <button className="btn-primary flex items-center gap-1.5 text-xs py-2 px-3" onClick={() => alert('Gunakan module Team Member untuk mencatat lembur.')}>
-          <Plus size={13} /> Catat Lembur
+        <button className="btn-primary flex items-center gap-1.5 text-xs py-2 px-3 font-bold cursor-pointer" onClick={() => setIsModalOpen(true)}>
+          <Plus size={13} /> Catat Lembur Tim
         </button>
       </div>
 
@@ -95,10 +126,10 @@ export default function PMOvertime() {
                 {/* Action buttons for pending */}
                 {ot.status === 'pending' && (
                   <div className="flex flex-col gap-1.5 shrink-0">
-                    <button onClick={() => updateOvertimeStatus(ot.id, 'approved')} className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600">
+                    <button onClick={() => updateOvertimeStatus(ot.id, 'approved')} className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 cursor-pointer">
                       <CheckCircle size={12} /> Setujui
                     </button>
-                    <button onClick={() => updateOvertimeStatus(ot.id, 'declined')} className="btn-ghost text-xs py-1.5 px-3 flex items-center gap-1"
+                    <button onClick={() => updateOvertimeStatus(ot.id, 'declined')} className="btn-ghost text-xs py-1.5 px-3 flex items-center gap-1 cursor-pointer"
                       style={{ color: 'var(--red-err)', borderColor: 'var(--red-err-dim)' }}>
                       <XCircle size={12} /> Tolak
                     </button>
@@ -144,6 +175,70 @@ export default function PMOvertime() {
           })}
         </div>
       </div>
+
+      {/* Modal Catat Lembur */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 fade-in">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h3 className="font-bold text-lg text-gray-800">Form Catat Lembur Anggota Tim</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+            </div>
+            <form onSubmit={handleCreateOvertime} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Nama Anggota Tim</label>
+                <input 
+                  type="text" 
+                  placeholder="Contoh: Dimas Prasetyo / Risa Amalia" 
+                  value={userName} 
+                  onChange={e => setUserName(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-xl text-sm focus:outline-red-500" 
+                  required 
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Jumlah Jam Lembur</label>
+                  <input 
+                    type="number" 
+                    min="1"
+                    max="12"
+                    value={durationHours} 
+                    onChange={e => setDurationHours(Number(e.target.value))}
+                    className="w-full px-3 py-2 border rounded-xl text-sm focus:outline-red-500" 
+                    required 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Tanggal Lembur</label>
+                  <input 
+                    type="date" 
+                    value={date} 
+                    onChange={e => setDate(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-xl text-sm focus:outline-red-500" 
+                    required 
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Alasan / Tugas Lembur</label>
+                <textarea 
+                  rows={3}
+                  placeholder="Contoh: Kejar revisi pitch presentation klien" 
+                  value={reason} 
+                  onChange={e => setReason(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-xl text-sm focus:outline-red-500" 
+                  required 
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-3 border-t">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-xs font-bold text-gray-600 bg-gray-100 rounded-xl">Batal</button>
+                <button type="submit" className="btn-primary px-5 py-2 text-xs font-bold rounded-xl shadow-md">Simpan Lembur</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

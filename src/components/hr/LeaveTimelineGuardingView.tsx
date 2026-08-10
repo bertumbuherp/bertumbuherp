@@ -12,7 +12,7 @@ export function LeaveTimelineGuardingView() {
 
   // PM Assignment Guarding Test Widget State
   const [testUserId, setTestUserId] = useState('e1'); // Ghani Affan
-  const [testTaskDate, setTestTaskDate] = useState('2024-06-11'); // Overlaps with Ghani's leave (10-12 Jun)
+  const [testTaskDate, setTestTaskDate] = useState('2026-06-11'); // Overlaps with Ghani's leave (10-12 Jun)
   const [testResult, setTestResult] = useState<{ isBlocked: boolean; message: string } | null>(null);
 
   // Leave Application Form State

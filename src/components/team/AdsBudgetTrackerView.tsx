@@ -44,11 +44,11 @@ const PLATFORM_ICONS: Record<AdPlatform, string> = {
 };
 
 const INITIAL_ADS_DATA: AdsBudgetEntry[] = [
-  { id: 'ab1', projectId: 'p3', projectName: 'Campaign Lebaran', clientName: 'Batik Wastra', platform: 'Meta Ads', allocatedBudget: 8000000, spentBudget: 8560000, billingStatus: 'billed', billedToClient: 8500000, startDate: '2024-03-15', endDate: '2024-05-25', notes: 'Kampanye Lebaran Q2 — retargeting + lookalike', roas: 3.2 },
-  { id: 'ab2', projectId: 'p3', projectName: 'Campaign Lebaran', clientName: 'Batik Wastra', platform: 'TikTok Ads', allocatedBudget: 3000000, spentBudget: 2850000, billingStatus: 'billed', billedToClient: 3000000, startDate: '2024-04-01', endDate: '2024-05-25', notes: 'TikTok campaign awareness', roas: 2.8 },
-  { id: 'ab3', projectId: 'p4', projectName: 'Performance Ads Q2', clientName: 'Edu Academy', platform: 'Google Ads', allocatedBudget: 6000000, spentBudget: 4200000, billingStatus: 'pending', billedToClient: 0, startDate: '2024-04-01', endDate: '2024-06-30', notes: 'Search + Display Edu Academy Q2', roas: 4.1 },
-  { id: 'ab4', projectId: 'p4', projectName: 'Performance Ads Q2', clientName: 'Edu Academy', platform: 'YouTube Ads', allocatedBudget: 2500000, spentBudget: 1800000, billingStatus: 'pending', billedToClient: 0, startDate: '2024-05-01', endDate: '2024-06-30', notes: 'YouTube skippable ads awareness', roas: 2.1 },
-  { id: 'ab5', projectId: 'p2', projectName: 'Social Media Retainer Mei', clientName: 'Kopi Nusantara', platform: 'Meta Ads', allocatedBudget: 4000000, spentBudget: 3600000, billingStatus: 'paid', billedToClient: 4000000, startDate: '2024-05-01', endDate: '2024-05-31', notes: 'Boosting post organik + story ads', roas: 3.8 },
+  { id: 'ab1', projectId: 'p3', projectName: 'Campaign Lebaran', clientName: 'Batik Wastra', platform: 'Meta Ads', allocatedBudget: 8000000, spentBudget: 8560000, billingStatus: 'billed', billedToClient: 8500000, startDate: '2026-03-15', endDate: '2026-05-25', notes: 'Kampanye Lebaran Q2 — retargeting + lookalike', roas: 3.2 },
+  { id: 'ab2', projectId: 'p3', projectName: 'Campaign Lebaran', clientName: 'Batik Wastra', platform: 'TikTok Ads', allocatedBudget: 3000000, spentBudget: 2850000, billingStatus: 'billed', billedToClient: 3000000, startDate: '2026-04-01', endDate: '2026-05-25', notes: 'TikTok campaign awareness', roas: 2.8 },
+  { id: 'ab3', projectId: 'p4', projectName: 'Performance Ads Q2', clientName: 'Edu Academy', platform: 'Google Ads', allocatedBudget: 6000000, spentBudget: 4200000, billingStatus: 'pending', billedToClient: 0, startDate: '2026-04-01', endDate: '2026-06-30', notes: 'Search + Display Edu Academy Q2', roas: 4.1 },
+  { id: 'ab4', projectId: 'p4', projectName: 'Performance Ads Q2', clientName: 'Edu Academy', platform: 'YouTube Ads', allocatedBudget: 2500000, spentBudget: 1800000, billingStatus: 'pending', billedToClient: 0, startDate: '2026-05-01', endDate: '2026-06-30', notes: 'YouTube skippable ads awareness', roas: 2.1 },
+  { id: 'ab5', projectId: 'p2', projectName: 'Social Media Retainer Mei', clientName: 'Kopi Nusantara', platform: 'Meta Ads', allocatedBudget: 4000000, spentBudget: 3600000, billingStatus: 'paid', billedToClient: 4000000, startDate: '2026-05-01', endDate: '2026-05-31', notes: 'Boosting post organik + story ads', roas: 3.8 },
 ];
 
 const BILLING_STATUS_STYLE: Record<BillingStatus, string> = {

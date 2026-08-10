@@ -36,7 +36,7 @@ export function GajiPayroll({ filterType = 'All', mode }: GajiPayrollProps = {})
 
   const formatRupiah = (amount: number) => {
     if (!amount || amount === 0) return '-';
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 2 }).format(amount).replace(/\s/g, '');
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
   };
 
   const showToast = (msg: string) => {
@@ -52,7 +52,7 @@ export function GajiPayroll({ filterType = 'All', mode }: GajiPayrollProps = {})
       const yearStr = new Date().getFullYear().toString();
       
       const approvedOvertimes = overtimes.filter(ot =>
-        (ot.userId === emp.id || ot.userName === emp.name) &&
+        (ot.userId === emp.id || ot.userName.toLowerCase() === emp.name.toLowerCase()) &&
         ot.status === 'approved' &&
         ot.date.startsWith(`${yearStr}-${monthStr}`)
       );
@@ -86,7 +86,10 @@ export function GajiPayroll({ filterType = 'All', mode }: GajiPayrollProps = {})
   // Build the dynamic summary data
   const summaryData = useMemo(() => {
     return employees.map(emp => {
-      const empPayrolls = payrolls.filter(p => p.userId === emp.id && p.year.toString() === gajiFilterYear);
+      const empPayrolls = payrolls.filter(p => 
+        (p.userId === emp.id || p.userName.toLowerCase() === emp.name.toLowerCase()) && 
+        p.year.toString() === gajiFilterYear
+      );
       
       const row: any = {
         div: emp.div,
@@ -103,7 +106,7 @@ export function GajiPayroll({ filterType = 'All', mode }: GajiPayrollProps = {})
       row['thr'] = thr ? thr.netPay : 0;
 
       return row;
-    }).sort((a, b) => a.div.localeCompare(b.div));
+    }).sort((a, b) => (a.div || '').localeCompare(b.div || ''));
   }, [employees, payrolls, gajiFilterYear]);
 
   const getColTotal = (data: any[], key: string, filterFt = false) => {

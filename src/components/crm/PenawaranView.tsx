@@ -346,8 +346,13 @@ export function PenawaranView() {
                 className="border border-gray-200 rounded-lg p-1.5 text-xs bg-gray-50 font-semibold focus:outline-none focus:border-red-500"
               >
                 <option value="all">Semua Klien Agensi</option>
-                {clients.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                {Array.from(
+                  new Map([
+                    ...clients.map(c => [c.id, c.name] as [string, string]),
+                    ...quotations.map(q => [q.clientId || q.clientName, q.clientName] as [string, string])
+                  ]).entries()
+                ).map(([id, name]) => (
+                  <option key={id} value={id}>{name}</option>
                 ))}
               </select>
             </div>

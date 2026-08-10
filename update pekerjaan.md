@@ -464,6 +464,53 @@ Dokumen ini mencatat secara sistematis seluruh perubahan file, penambahan fitur,
   - Tata cara merge cabang fitur kembali ke branch `main`.
   - Cheat sheet ringkas perintah terminal Git.
 
+#### 📄 [MODIFY] Perbaikan 22 Bug Utama Bertumbuh ERP (Phase 1 s/d Phase 4)
+- **Files Modified**:
+  1. `src/components/views/CEODashboardView.tsx`:
+     - Fix **BUG-006 & BUG-007**: Memperbaiki kalkulasi total pengeluaran beban jurnal (akun code starting 5., 6., atau nama Beban/Biaya) dan formula Laba Bersih `totalRevenue - totalExpenses`.
+     - Fix **BUG-008**: Memperbaiki match tanggal filter proyek agar proyek aktif selama rentang bulan yang dipilih tetap terhitung di KPI.
+  2. `src/components/finance/BalanceSheet.tsx`:
+     - Fix **BUG-014**: Menambahkan kalkulasi Laba Tahun Berjalan (Net Profit) dari pendapatan dikurangi beban ke dalam komponen Ekuitas sehingga Neraca Seimbang (`Total Aset = Total Kewajiban + Total Ekuitas`).
+  3. `src/components/finance/BODFinancialReportView.tsx`:
+     - Fix **BUG-013**: Memperbarui teks rekomendasi strategis BOD menjadi dinamis berdasarkan persentase `netMarginPct` (Kritis/Moderat/Sehat).
+  4. `src/components/finance/MultiPeriodReportView.tsx`:
+     - Fix **BUG-015**: Menghapus konstanta hardcoded `+ 387624245` pada akumulasi YTD Revenue.
+     - Fix **BUG-016**: Memperbaiki format tanda pertumbuhan MoM, warna badge indicator, dan penanda "Naik"/"Turun".
+  5. `src/components/finance/VendorTable.tsx`:
+     - Fix **BUG-017**: Menambahkan Modal Form Input Vendor Baru & Pengeluaran Fee Luar interaktif.
+  6. `src/components/finance/ReimbursTable.tsx`:
+     - Fix **BUG-019**: Menambahkan Dokumen Bukti Transaksi Audit Resmi dengan metadata pengunggah, SHA-256 digest, dan stempel verifikasi digital pada lampiran reimbursement.
+  7. `src/components/finance/GajiPayroll.tsx`:
+     - Fix **BUG-018**: Memperbaiki matching `userId`/`userName` karyawan dan penanganan format nominal Rupiah pada summary tabel payroll tahunan.
+  8. `src/components/crm/ClientListView.tsx`:
+     - Fix **BUG-020**: Menghubungkan tombol "Lihat Detail" pada kartu klien ke Modal Drawer Detail Klien interaktif.
+  9. `src/components/crm/PenawaranView.tsx`:
+     - Fix **BUG-021**: Menyinkronkan daftar klien pada dropdown filter penawaran quotation sehingga mencakup seluruh klien unik dari dataset CRM.
+  10. `src/components/crm/KontrakView.tsx`:
+     - Fix **BUG-022**: Menambahkan validation gate pada handler cetak/unduh PDF kontrak yang memblokir ekspor bila nilai kontrak Rp0 (non-NDA) atau lingkup pekerjaan kosong.
+  11. `src/app/login/page.tsx`:
+      - Fix **BUG-001**: Menambahkan Modal Pemulihan Kata Sandi.
+      - Fix **BUG-002**: Menambahkan Modal Dokumen Legal Syarat & Privasi.
+      - Fix **BUG-003**: Menambahkan `aria-label` dinamis pada toggle password.
+      - Fix **BUG-004**: Menambahkan banner status Lingkungan Demo Sandbox.
+      - Fix **BUG-005**: Memperjelas alur registrasi menjadi "Ajukan Demo Agensi" dengan konfirmasi dialog.
+  12. `src/components/layout/Header.tsx`:
+      - Fix **BUG-009**: Menambahkan fitur Pencarian Global Interaktif lintas modul (Proyek, Klien, Deals, Invoice) di baris pencarian header.
+      - Fix **BUG-024**: Menambahkan atribut aksesibilitas `aria-label` dan `title` pada kontrol tombol & input header.
+  13. `src/app/(dashboard)/pm/reports/page.tsx`:
+      - Fix **BUG-011**: Memperbaiki handler unduh laporan riwayat agar mengunduh file fisik teks/laporan secara langsung.
+  14. `src/components/views/SettingsView.tsx`:
+      - Fix **BUG-012 & BUG-023**: Menghubungkan profil nama lengkap dan alamat email di Pengaturan Sistem langsung ke data sesi `useAuth()` yang aktif.
+  15. `src/components/crm/DealKanbanBoard.tsx`:
+      - Menambahkan Modal Form "Tambah Deal Prospek Baru" interaktif yang terhubung langsung dengan `addDeal` pada `crmStore`.
+  16. `src/components/pm/PMOvertime.tsx`:
+      - Menambahkan Modal Form "Catat Lembur Tim" interaktif yang terhubung langsung dengan `addOvertime` pada `hrStore`.
+  17. `src/lib/store/hrStore.ts`, `AdsBudgetTrackerView.tsx`, `PajakTable.tsx`, `CutiView.tsx`, `PMClientReport.tsx`, `LeaveTimelineGuardingView.tsx`:
+      - Menyelaraskan seluruh data seed lembur, cuti, budget ads, perpajakan, dan laporan ke tahun 2026 untuk konsistensi konteks sistem secara menyeluruh.
+  18. `bugfixed.md`:
+      - Memperbarui rekapitulasi status perbaikan seluruh 24 bug ke status `Fixed` (100% selesai).
+
+
 
 
 

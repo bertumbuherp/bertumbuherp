@@ -65,10 +65,15 @@ function CEODashboardContent() {
 
   // --- FILTERED DATA SETS ---
   const filteredDeals = deals.filter(d => matchesFilter(d.createdAt));
-  const filteredProjects = projects.filter(p => matchesFilter(p.startDate || p.createdAt));
+  const filteredProjects = projects.filter(p => {
+    if (selectedMonthFilter === 'all') return true;
+    const pStart = p.startDate || p.contractStartDate || p.createdAt;
+    const pEnd = p.endDate || p.contractEndDate || pStart;
+    return pStart <= `${selectedMonthFilter}-31` && pEnd >= `${selectedMonthFilter}-01`;
+  });
   const filteredTasks = tasks.filter(t => matchesFilter(t.dueDate || t.createdAt));
   const filteredInvoices = invoices.filter(i => matchesFilter((i as any).paidDate || (i as any).issueDate || i.dueDate));
-  const filteredJournal = journal.filter(j => matchesFilter(j.date));
+  const filteredJournal = journal.filter(j => matchesFilter(j.date) && !j.isVoided);
 
   // --- CALCULATE CRM METRICS ---
   const activeDeals = filteredDeals.filter(d => d.stage !== 'won' && d.stage !== 'lost');
@@ -102,8 +107,13 @@ function CEODashboardContent() {
   // --- CALCULATE FINANCE METRICS ---
   // Revenue: Paid Invoices
   const totalRevenue = filteredInvoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.total, 0);
-  // Expenses: Journal Entries (credits for Kas/Cash and debits for Biaya) + Reimbursements Paid + Payroll Paid
-  const totalExpenses = filteredJournal.filter(j => j.account === 'Biaya Operasional' || j.account === 'Biaya Gaji').reduce((sum, j) => sum + j.amount, 0);
+  // Expenses: Journal Entries for Expense accounts (5.x and 6.x)
+  const totalExpenses = filteredJournal.filter(j => 
+    j.accountCode.startsWith('5.') || 
+    j.accountCode.startsWith('6.') || 
+    j.account.includes('Biaya') || 
+    j.account.includes('Beban')
+  ).reduce((sum, j) => sum + j.amount, 0);
   const netProfit = totalRevenue - totalExpenses;
   
   // --- CHART DATA GENERATION (Fully Dynamic Cash Flow) ---
@@ -203,11 +213,9 @@ function CEODashboardContent() {
               className="text-xs font-bold text-gray-700 bg-transparent outline-none border-none cursor-pointer"
             >
               <option value="all">Semua Waktu</option>
-              <option value="2026-06">Juni 2026</option>
+              <option value="2026-06">Juni 2026 (Bulan Ini)</option>
               <option value="2026-05">Mei 2026</option>
-              <option value="2024-06">Juni 2024</option>
-              <option value="2024-05">Mei 2024</option>
-              <option value="2024-04">April 2024</option>
+              <option value="2026-04">April 2026</option>
             </select>
           </div>
         </div>

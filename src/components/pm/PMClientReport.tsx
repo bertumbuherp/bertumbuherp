@@ -17,7 +17,7 @@ export default function PMClientReport() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Laporan Progress Klien</p>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Update proyek berdasarkan laporan team lead · Mei 2024</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Update proyek berdasarkan laporan team lead · Mei 2026</p>
         </div>
         <button className="btn-primary flex items-center gap-1.5 text-xs py-2 px-3">
           <Send size={13} /> Kirim Semua Laporan

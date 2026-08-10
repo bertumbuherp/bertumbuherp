@@ -61,7 +61,7 @@ export default function CutiPage() {
           <div className="card p-5 border-l-4 border-blue-500 bg-blue-50/30">
             <p className="text-sm font-semibold text-gray-500 mb-1">Sisa Cuti Tahunan</p>
             <p className="text-3xl font-bold text-gray-800">9 Hari</p>
-            <p className="text-xs mt-1 text-gray-400">Dari total 12 hari (Tahun 2024)</p>
+            <p className="text-xs mt-1 text-gray-400">Dari total 12 hari (Tahun 2026)</p>
           </div>
           <div className="card p-5 border-l-4 border-yellow-500">
             <p className="text-sm font-semibold text-gray-500 mb-1">Cuti Menunggu Approval</p>

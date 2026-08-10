@@ -65,14 +65,14 @@ interface HRStoreState {
 }
 
 const initialOvertimes: Overtime[] = [
-  { id: 'ot1', userId: 'e6', userName: 'Dimas Prasetyo', projectId: 'p1', date: '2024-06-15T18:00', durationHours: 3, reason: 'Lembur kejar deadline pitch', status: 'pending' },
-  { id: 'ot2', userId: 'e7', userName: 'Sarah Wijaya', projectId: 'p2', date: '2024-06-12T19:00', durationHours: 2, reason: 'Revisi desain mendadak', status: 'approved' },
-  { id: 'ot3', userId: 'e6', userName: 'Dimas Prasetyo', projectId: 'p3', date: '2024-05-20T17:30', durationHours: 4, reason: 'Maintenance server', status: 'declined' },
+  { id: 'ot1', userId: 'e6', userName: 'Dimas Prasetyo', projectId: 'p1', date: '2026-06-15T18:00', durationHours: 3, reason: 'Lembur kejar deadline pitch', status: 'pending' },
+  { id: 'ot2', userId: 'e7', userName: 'Sarah Wijaya', projectId: 'p2', date: '2026-06-12T19:00', durationHours: 2, reason: 'Revisi desain mendadak', status: 'approved' },
+  { id: 'ot3', userId: 'e6', userName: 'Dimas Prasetyo', projectId: 'p3', date: '2026-05-20T17:30', durationHours: 4, reason: 'Maintenance server', status: 'declined' },
 ];
 
 const initialLeaves: Leave[] = [
-  { id: 'c1', userId: 'e1', userName: 'Ghani Affan', type: 'Tahunan', startDate: '2024-06-10', endDate: '2024-06-12', reason: 'Liburan keluarga', status: 'approved_hr', durationDays: 3 },
-  { id: 'c2', userId: 'e2', userName: 'Amalia', type: 'Sakit', startDate: '2024-05-02', endDate: '2024-05-02', reason: 'Demam', status: 'approved_hr', durationDays: 1 },
+  { id: 'c1', userId: 'e1', userName: 'Ghani Affan', type: 'Tahunan', startDate: '2026-06-10', endDate: '2026-06-12', reason: 'Liburan keluarga', status: 'approved_hr', durationDays: 3 },
+  { id: 'c2', userId: 'e2', userName: 'Amalia', type: 'Sakit', startDate: '2026-05-02', endDate: '2026-05-02', reason: 'Demam', status: 'approved_hr', durationDays: 1 },
 ];
 
 const initialEmployees: Employee[] = [

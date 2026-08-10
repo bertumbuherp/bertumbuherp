@@ -219,15 +219,19 @@ export function KontrakView() {
         <div className="flex items-center gap-2">
           <button 
             onClick={() => {
+              if (contractTemplateType !== 'NDA' && (contractValue <= 0 || !scopeOfWork.trim())) {
+                alert('⚠️ Gagal Mengunduh Kontrak:\n\nNilai kontrak tidak boleh Rp 0 dan Lingkup Pekerjaan wajib diisi sebelum dokumen legal dapat dibuat.');
+                return;
+              }
               setToast('Mencetak dokumen A4 Kontrak Legal...');
               setTimeout(() => {
                 setToast(null);
                 handlePrint();
               }, 400);
             }}
-            className="btn-primary flex items-center gap-1.5 py-2 px-4 text-sm font-bold shadow-md cursor-pointer"
+            className="btn-primary flex items-center gap-1.5 py-2 px-4 text-sm font-bold shadow-md cursor-pointer disabled:opacity-50"
           >
-            <Printer size={16} /> Unduh & Cetak PDF Kontrak ↗
+            <Printer size={16} /> Unduh &amp; Cetak PDF Kontrak ↗
           </button>
         </div>
       </div>

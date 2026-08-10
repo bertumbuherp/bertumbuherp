@@ -8,6 +8,7 @@ import { Client } from '@/lib/types';
 export function ClientListView() {
   const { clients, updateClientStatus } = useCrmStore();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   const filteredClients = clients.filter(c => 
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -32,7 +33,7 @@ export function ClientListView() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="btn-primary py-2 px-4 whitespace-nowrap" onClick={() => alert('Fitur tambah klien sedang dalam pengembangan.')}>
+          <button className="btn-primary py-2 px-4 whitespace-nowrap" onClick={() => alert('Fitur tambah klien baru dapat diakses via CRM deals.')}>
             Tambah Klien
           </button>
         </div>
@@ -98,7 +99,10 @@ export function ClientListView() {
             </div>
 
             <div className="p-4 border-t bg-gray-50 flex justify-end">
-              <button className="text-sm font-semibold text-red-600 hover:text-red-700 flex items-center gap-1">
+              <button 
+                onClick={() => setSelectedClient(client)}
+                className="text-sm font-semibold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer"
+              >
                 Lihat Detail <ExternalLink size={14}/>
               </button>
             </div>
@@ -111,6 +115,61 @@ export function ClientListView() {
           </div>
         )}
       </div>
+
+      {/* Modal Detail Klien */}
+      {selectedClient && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-5 fade-in">
+            <div className="flex justify-between items-start border-b pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-red-600 text-white rounded-xl flex items-center justify-center font-bold text-xl">
+                  {selectedClient.name.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="font-bold text-xl text-gray-900">{selectedClient.name}</h3>
+                  <p className="text-xs text-gray-500">{selectedClient.industry} · Bergabung: {selectedClient.createdAt || '2026'}</p>
+                </div>
+              </div>
+              <button onClick={() => setSelectedClient(null)} className="text-gray-400 hover:text-gray-600 font-bold text-lg">✕</button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <div>
+                <p className="text-xs text-gray-400 font-bold uppercase">Total Kontribusi Revenue</p>
+                <p className="text-lg font-black text-emerald-600 mt-1">{formatCurrency(selectedClient.totalRevenue)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 font-bold uppercase">Status Kemitraan</p>
+                <span className="inline-block mt-1 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full uppercase">
+                  {selectedClient.status}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-sm text-gray-800 mb-3">Daftar Kontak Perusahaan ({selectedClient.contacts.length})</h4>
+              <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
+                {selectedClient.contacts.map(c => (
+                  <div key={c.id} className="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1 text-xs">
+                    <p className="font-bold text-gray-800">{c.name} — <span className="text-gray-500 font-normal">{c.role}</span></p>
+                    <p className="text-gray-600">✉ {c.email}</p>
+                    {c.phone && <p className="text-gray-600">📞 {c.phone}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-3 border-t flex justify-end">
+              <button 
+                onClick={() => setSelectedClient(null)} 
+                className="btn-primary px-5 py-2 text-xs font-bold rounded-xl"
+              >
+                Tutup Detail Klien
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

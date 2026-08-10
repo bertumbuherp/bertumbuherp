@@ -4,9 +4,9 @@ import { formatCurrency } from '@/lib/utils';
 
 export function PajakTable() {
   const [pajakData] = useState([
-    { id: 'tx1', type: 'Pajak Bulanan', period: 'Januari 2024', amount: 207653, status: 'paid' },
-    { id: 'tx2', type: 'Pajak Bulanan', period: 'Februari 2024', amount: 261099, status: 'paid' },
-    { id: 'tx3', type: 'Pajak Bulanan', period: 'Maret 2024', amount: 202580, status: 'pending' },
+    { id: 'tx1', type: 'Pajak Bulanan (PPn)', period: 'Januari 2026', amount: 207653, status: 'paid' },
+    { id: 'tx2', type: 'Pajak Bulanan (PPn)', period: 'Februari 2026', amount: 261099, status: 'paid' },
+    { id: 'tx3', type: 'Pajak Bulanan (PPh 21)', period: 'Maret 2026', amount: 202580, status: 'pending' },
   ]);
 
   return (
