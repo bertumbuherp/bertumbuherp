@@ -3,36 +3,69 @@
 
 Dokumen ini mencatat secara sistematis seluruh perubahan file, penambahan fitur, refactoring, dan perbaikan bug dalam proyek **Bertumbuh Agency ERP**. Setiap aktivitas pembaruan kode akan selalu dicatat di sini.
 
----
-
 ## 📅 Tanggal: 03 September 2026
 
 ### 1. Penyesuaian Aplikasi untuk Penggunaan Real (Internal ERP PT Bertumbuh)
-- Menghapus seluruh elemen demo, banner sandbox, tombol quick access login demo, dan tab multi-tenant pada `/login`.
-- Membuat file `.env.local` dan `.env.example` untuk kredensial internal per role (Owner, Super Admin, PM, Finance, AE, HR, Karyawan) dan variabel aplikasi.
-- Memperbarui `.gitignore` untuk melindungi file `.env*.local`.
 
 ### 2. Modul Admin (Kelola User & Log Aktivitas Audit Trail)
-- Membuat `src/lib/store/activityLogStore.ts` untuk sistem audit log aktivitas seluruh pengguna.
-- Membuat `src/lib/store/userStore.ts` untuk manajemen user (Tambah, Edit, Hapus, Status Aktif).
-- Membuat `UserManagementView.tsx` & `ActivityLogView.tsx` untuk antarmuka admin pengawas.
-- Menambahkan rute `/super_admin/users` dan `/super_admin/activity-logs`.
 
-### 4. Integrasi Backend Supabase Auth & PostgreSQL Database (27 Tabel)
-- **Instalasi Package**: Menginstal `@supabase/supabase-js` v2 untuk konektivitas SDK Supabase.
-- **Client Helper (`src/lib/supabaseClient.ts`)**: Membuat inisialisasi helper client Supabase menggunakan URL & ANON KEY.
-- **Migration SQL (`supabase_schema_v1.0.0.sql`)**: Memperbarui skrip SQL migration untuk 27 tabel lengkap (Profiles, Auth Link, Audit Logs, Exception Logs, CRM Clients/Deals/Packages/Quotations/Contracts, PM Projects/Tasks/Add-ons/Meetings, Finance COA/Journal/Invoices/Reimbursements/Vendors, HR Leaves/Overtimes/Attendances/Allocations/Payroll, & Global Calendar).
-- **Integrasi Supabase Auth (`AuthService.ts` & `AuthContext.tsx`)**: Menghubungkan `signInWithPassword`, pencarian profil role `public.profiles`, dan `signOut` ke backend Supabase Auth.
-- **Environment Credentials (`.env.local`)**: Mengisikan URL Supabase cloud (`https://tptuuihcoltlursaelmu.supabase.co`), Anon Key, dan Service Role Key aktif tanpa tanda petik ganda.
-- **Perbaikan Dependensi UI (`recharts`)**: Menginstal ulang paket `recharts` ke `node_modules` untuk mengatasi error `Module not found: Can't resolve 'recharts'` pada komponen grafik `CEODashboardView.tsx`.
+#### 📄 [NEW] `src/lib/store/activityLogStore.ts`
+- **Tujuan**: Store terpusat sistem audit log aktivitas seluruh pengguna.
+- **Detail Perubahan**: Menyimpan timestamp, pengguna, role, modul, jenis aksi, dan rincian aktivitas sistem secara real-time.
 
-### 5. Migrasi Akun & Kredensial Berbasis Role (Role-Based Identifiers)
-- **File Configuration (`.env.local` & `.env.example`)**: Mengubah email kredensial dari nama personal menjadi email resmi berbasis role (`owner@bertumbuh.id`, `admin@bertumbuh.id`, `pm@bertumbuh.id`, `finance@bertumbuh.id`, `ae@bertumbuh.id`, `hr@bertumbuh.id`, `team@bertumbuh.id`).
-- **Autentikasi & Data Master (`AuthService.ts` & `mockRepository.ts`)**: Memperbarui peta kredensial dan daftar master karyawan menggunakan nama jabatan/role resmi dan email berbasis role.
+#### 📄 [NEW] `src/lib/store/userStore.ts`
+- **Tujuan**: Store terpusat manajemen pengguna ERP (pengembangan karyawan).
+- **Detail Perubahan**: Fungsi `addUser`, `updateUser`, `deleteUser`, dan `toggleUserStatus` yang secara otomatis terintegrasi dengan pencatatan audit log.
 
-### 6. Penyesuaian Menu Navigasi Khusus Role Super Admin
-- **Sidebar Component (`Sidebar.tsx`)**: Memisahkan navigasi `super_admin` agar hanya menampilkan 3 menu khusus jobdesk Admin: *Kelola User & Hak Akses*, *Log Aktivitas (Audit)*, dan *Status System & Health*.
-- **Role Permissions & Navigation (`permissions.ts`)**: Memperbarui `ROLE_NAV.super_admin` menjadi `['/super_admin']` dan `ROLE_DEFAULT_ROUTE.super_admin` menjadi `/super_admin` agar login Super Admin langsung masuk ke Admin Control Center.
+#### 📄 [NEW] `src/components/admin/UserManagementView.tsx`
+- **Tujuan**: Tampilan antarmuka Kelola User & Hak Akses bagi Admin & Owner.
+- **Detail Perubahan**: Tabel data user, filter role & status, modal tambah user baru, modal edit profil & gaji, serta konfirmasi hapus/nonaktifkan user.
+
+#### 📄 [NEW] `src/components/admin/ActivityLogView.tsx`
+- **Tujuan**: Tampilan antarmuka Log Aktivitas (Audit Trail Pengawas).
+- **Detail Perubahan**: Tabel audit trail dengan filter modul (`AUTH`, `USER_MGMT`, `CRM`, `PM`, `FINANCE`, `HR`), filter role, pencarian kata kunci, serta tombol **Export CSV Report**.
+
+#### 📄 [NEW] Rute App Router:
+- `src/app/(dashboard)/super_admin/page.tsx`
+- `src/app/(dashboard)/super_admin/users/page.tsx`
+- `src/app/(dashboard)/super_admin/activity-logs/page.tsx`
+
+#### 📄 [MODIFY] `src/lib/permissions.ts` & `src/components/layout/Sidebar.tsx`
+- **Tujuan**: Integrasi hak akses dan navigasi menu Admin/Owner.
+- **Detail Perubahan**: Menambahkan menu **Kelola User & Hak Akses** dan **Log Aktivitas (Audit)** pada Sidebar Owner dan Super Admin.
+
+#### 📄 [MODIFY] `src/contexts/AuthContext.tsx`
+- **Tujuan**: Pencatatan otomatis audit log pada autentikasi.
+- **Detail Perubahan**: Menambahkan pengiriman event audit log otomatis saat pengguna Login dan Logout.
+
+#### 📄 [NEW] `.env.local` & `.env.example`
+- **Tujuan**: Menyimpan konfigurasi environment variable & daftar kredensial akun internal per role.
+- **Detail Perubahan**:
+  - Menyediakan variabel environment untuk 6 role internal (`Owner`, `PM`, `Finance`, `AE`, `HR`, `Karyawan`).
+  - Menyediakan variabel konfigurasi koneksi Supabase & app environment.
+
+#### 📄 [MODIFY] `.gitignore`
+- **Tujuan**: Mencegah kebocoran file environment ke repositori Git.
+- **Detail Perubahan**: Menambahkan `.env*.local`, `.env`, `.env.production`, `.env.development` ke `.gitignore`.
+
+#### 📄 [MODIFY] `src/app/login/page.tsx`
+- **Tujuan**: Mengubah halaman login dari mode demo/multi-tenant menjadi Portal Login Internal Resmi PT Bertumbuh Creative.
+- **Detail Perubahan**:
+  - Menghapus banner `DEMO ACCESS / Lingkungan Sandbox Aktif`.
+  - Menghapus pembungkus tombol `Akses Cepat Mode Demo` (Owner, PM, Finance, AE, HR, Karyawan).
+  - Menghapus tab dan form `Ajukan Demo` / `Daftar Agensi Baru` (multi-tenant registration).
+  - Memperbarui teks header & branding panel menjadi portal operasional internal resmi Bertumbuh ERP.
+
+#### 📄 [MODIFY] `src/backend/services/AuthService.ts`
+- **Tujuan**: Pengetatan autentikasi login pengguna.
+- **Detail Perubahan**:
+  - Menghapus bypass kata sandi bebas mode demo.
+  - Mewajibkan validasi kata sandi terenkripsi/terdaftar untuk akun internal.
+
+#### 📄 [MODIFY] `src/components/crm/StrategiPackageView.tsx`
+- **Tujuan**: Pembersihan label demo UI.
+- **Detail Perubahan**:
+  - Mengubah label `Mock Approval` menjadi `Persetujuan Direksi`.
 
 ---
 

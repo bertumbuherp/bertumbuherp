@@ -78,15 +78,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const result = await mockLogin(credentials);
     if (result.success && result.session) {
       setSession(result.session);
+      try {
+        const { useActivityLogStore } = require('@/lib/store/activityLogStore');
+        useActivityLogStore.getState().addLog({
+          userId: result.session.userId,
+          userName: result.session.name,
+          userRole: result.session.roles[0],
+          module: 'AUTH',
+          action: 'LOGIN',
+          details: `Pengguna ${result.session.name} (${result.session.email}) berhasil masuk ke sistem.`,
+        });
+      } catch (e) {}
     }
     return result;
   }, []);
 
   const logout = useCallback(() => {
+    if (session) {
+      try {
+        const { useActivityLogStore } = require('@/lib/store/activityLogStore');
+        useActivityLogStore.getState().addLog({
+          userId: session.userId,
+          userName: session.name,
+          userRole: session.roles[0],
+          module: 'AUTH',
+          action: 'LOGOUT',
+          details: `Pengguna ${session.name} telah keluar dari sistem (Logout).`,
+        });
+      } catch (e) {}
+    }
+
+    try {
+      const { supabase, isSupabaseConfigured } = require('@/lib/supabaseClient');
+      if (isSupabaseConfigured()) {
+        supabase.auth.signOut().catch(() => {});
+      }
+    } catch (e) {}
+
     clearSession();
     setSession(null);
     router.push('/login');
-  }, [router]);
+  }, [session, router]);
 
   const value: AuthContextValue = {
     session,

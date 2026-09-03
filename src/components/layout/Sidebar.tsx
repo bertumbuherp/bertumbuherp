@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import {
   LayoutDashboard, TrendingUp, Users, FolderKanban,
   UserCheck, Settings, ChevronRight, LogOut, Layers, CalendarDays,
-  FileText, Clock, Send, CreditCard, Receipt, Building, FileSpreadsheet, DollarSign, Calculator, UserMinus, ShieldCheck, LucideIcon
+  FileText, Clock, Send, CreditCard, Receipt, Building, FileSpreadsheet, DollarSign, Calculator, UserMinus, ShieldCheck, Activity, Server, LucideIcon
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLE_LABELS_MAP } from '@/lib/permissions';
@@ -44,6 +44,9 @@ export default function Sidebar() {
   if (primaryRole === 'owner') {
     navItems = [
       { label: 'Ringkasan Eksekutif', href: '/ceo/dashboard?tab=summary', icon: ShieldCheck },
+      { label: 'Kelola User & Hak Akses', href: '/super_admin?tab=users', icon: Users },
+      { label: 'Log Aktivitas (Audit)', href: '/super_admin?tab=activity-logs', icon: Activity },
+      { label: 'Status System & Health', href: '/super_admin?tab=system-status', icon: Server },
       { label: 'CRM & Prospek Klien', href: '/ceo/dashboard?tab=crm', icon: TrendingUp },
       { label: 'PM & Operasional Proyek', href: '/ceo/dashboard?tab=pm', icon: FolderKanban },
       { label: 'HR & Kehadiran Tim', href: '/ceo/dashboard?tab=hr', icon: Users },
@@ -51,6 +54,12 @@ export default function Sidebar() {
       { label: 'Kalender Global', href: '/ceo/calendar', icon: CalendarDays },
       { label: 'Otorisasi Finansial', href: '/ceo/finance', icon: CreditCard },
       { label: 'Laporan Perusahaan', href: '/ceo/reports', icon: FileSpreadsheet },
+    ];
+  } else if (primaryRole === 'super_admin') {
+    navItems = [
+      { label: 'Kelola User & Hak Akses', href: '/super_admin?tab=users', icon: Users },
+      { label: 'Log Aktivitas (Audit)', href: '/super_admin?tab=activity-logs', icon: Activity },
+      { label: 'Status System & Health', href: '/super_admin?tab=system-status', icon: Server },
     ];
   } else if (primaryRole === 'team_member') {
     navItems = [
