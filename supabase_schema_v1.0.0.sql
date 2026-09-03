@@ -1,98 +1,129 @@
 -- ====================================================================
 -- 🚀 SUPABASE POSTGRESQL DATABASE SCHEMA MIGRATION SCRIPT (v1.0.0)
--- 🏢 PROYEK: BERTUMBUH AGENCY ERP - ALL 5 DIVISIONS
+-- 🏢 PROYEK: BERTUMBUH AGENCY ERP - COMPLETE 27 TABLES & SUPABASE AUTH
 -- ====================================================================
--- Eksekusi script SQL ini di Supabase SQL Editor untuk memperbarui
--- struktur tabel, relasi foreign key, indeks, RLS policy, dan data master.
+-- Eksekusi script SQL ini di Supabase SQL Editor untuk membuat
+-- seluruh 27 tabel, foreign key constraints, RLS policies, & data seed.
 -- ====================================================================
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- --------------------------------------------------------------------
--- 📁 DIVISI 1: PROJECT MANAGER (PM) & PACKAGE TIER
+-- 📁 KELOMPOK 1: USER PROFILES & AUTHENTICATION (SUPABASE AUTH LINK)
 -- --------------------------------------------------------------------
 
--- 1.1 Update/Create Table: projects
-CREATE TABLE IF NOT EXISTS public.projects (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+-- 1.1 Tabel Profiles (Terintegrasi dengan Supabase auth.users)
+CREATE TABLE IF NOT EXISTS public.profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    roles TEXT[] NOT NULL DEFAULT '{"team_member"}',
+    department TEXT DEFAULT 'Brand',
+    position TEXT DEFAULT 'Staff',
+    monthly_salary NUMERIC(15,2) DEFAULT 0,
+    standard_hours_per_month INT DEFAULT 160,
+    cost_rate NUMERIC(15,2) DEFAULT 0,
+    billable_rate NUMERIC(15,2) DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- --------------------------------------------------------------------
+-- 📁 KELOMPOK 2: AUDIT LOGS & SYSTEM MONITORING
+-- --------------------------------------------------------------------
+
+-- 2.1 Tabel Log Aktivitas (Audit Trail Pengawas)
+CREATE TABLE IF NOT EXISTS public.activity_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    timestamp TIMESTAMPTZ DEFAULT NOW(),
+    user_id TEXT NOT NULL,
+    user_name TEXT NOT NULL,
+    user_role TEXT NOT NULL,
+    module VARCHAR(50) NOT NULL, -- 'AUTH', 'USER_MGMT', 'CRM', 'PM', 'FINANCE', 'HR', 'SYSTEM'
+    action VARCHAR(100) NOT NULL,
+    details TEXT NOT NULL,
+    ip_address TEXT
+);
+
+-- 2.2 Tabel System Error Logs (Exception Monitor)
+CREATE TABLE IF NOT EXISTS public.system_error_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    timestamp TIMESTAMPTZ DEFAULT NOW(),
+    severity VARCHAR(20) NOT NULL DEFAULT 'info', -- 'critical', 'warning', 'info'
+    module VARCHAR(50) NOT NULL,
+    error_message TEXT NOT NULL,
+    stack_trace TEXT,
+    component_route TEXT,
+    status VARCHAR(20) DEFAULT 'unresolved' -- 'unresolved', 'investigating', 'resolved'
+);
+
+-- --------------------------------------------------------------------
+-- 📁 KELOMPOK 3: CRM & SALES PIPELINE
+-- --------------------------------------------------------------------
+
+-- 3.1 Tabel Klien (Clients)
+CREATE TABLE IF NOT EXISTS public.clients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    organization_id TEXT DEFAULT 'org_bertumbuh',
+    name TEXT NOT NULL,
+    industry TEXT,
+    status VARCHAR(20) DEFAULT 'active', -- 'active', 'prospect', 'inactive'
+    contacts JSONB DEFAULT '[]'::jsonb,
+    owned_by_ae TEXT,
+    total_revenue NUMERIC(15,2) DEFAULT 0,
+    active_projects INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3.2 Tabel Deals (Sales Pipeline)
+CREATE TABLE IF NOT EXISTS public.deals (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    organization_id TEXT DEFAULT 'org_bertumbuh',
     client_name TEXT NOT NULL,
-    status VARCHAR(50) DEFAULT 'In Progress',
-    package_tier VARCHAR(20) DEFAULT 'TIER_B', -- 'TIER_A', 'TIER_B', 'TIER_C', 'CUSTOM'
-    package_services TEXT[] DEFAULT '{}', -- e.g. ARRAY['Social Media', 'Content Creation', 'Design']
-    monthly_retainer_fee NUMERIC(15,2) DEFAULT 0,
-    contract_start_date DATE,
-    contract_end_date DATE,
-    progress_percentage INT DEFAULT 0,
+    client_id UUID REFERENCES public.clients(id) ON DELETE SET NULL,
+    title TEXT NOT NULL,
+    stage VARCHAR(50) NOT NULL DEFAULT 'lead', -- 'lead', 'kualifikasi', 'pitching', 'penawaran', 'negosiasi', 'won', 'lost'
+    value NUMERIC(15,2) DEFAULT 0,
+    probability INT DEFAULT 50,
+    ae_id TEXT,
+    ae_name TEXT,
+    source TEXT,
+    notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Pastikan kolom baru terkonfigurasi jika tabel projects sudah ada sebelumnya:
-ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS package_tier VARCHAR(20) DEFAULT 'TIER_B';
-ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS package_services TEXT[] DEFAULT '{}';
-ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS monthly_retainer_fee NUMERIC(15,2) DEFAULT 0;
-ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS contract_start_date DATE;
-ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS contract_end_date DATE;
-
--- 1.2 Table Baru: project_add_ons (Item 1.4)
-CREATE TABLE IF NOT EXISTS public.project_add_ons (
+-- 3.3 Tabel Master Service Packages
+CREATE TABLE IF NOT EXISTS public.service_packages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
-    category VARCHAR(50) NOT NULL, -- 'TALENT_KOL', 'PRINTING', 'MEDIA_PLACEMENT', 'VENUE_RENTAL', 'OTHER'
     name TEXT NOT NULL,
-    vendor_name TEXT,
-    cost_price NUMERIC(15,2) DEFAULT 0,
-    billed_price NUMERIC(15,2) DEFAULT 0,
-    margin_profit NUMERIC(15,2) GENERATED ALWAYS AS (billed_price - cost_price) STORED,
-    status VARCHAR(20) DEFAULT 'unbilled', -- 'unbilled', 'invoiced', 'paid'
+    description TEXT,
+    base_price NUMERIC(15,2) NOT NULL,
+    deliverables TEXT[] DEFAULT '{}',
+    color TEXT DEFAULT 'var(--blue)',
+    status VARCHAR(20) DEFAULT 'approved', -- 'pending', 'approved', 'rejected'
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 1.3 Table Baru: team_meetings (Item 1.5)
-CREATE TABLE IF NOT EXISTS public.team_meetings (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
-    title TEXT NOT NULL,
-    category VARCHAR(50) NOT NULL, -- 'TEAM_BRANDING', 'TEAM_SOSMED', 'TEAM_PERFORMANCE', 'GENERAL_SYNC'
-    meeting_date TIMESTAMPTZ NOT NULL,
-    meeting_mode VARCHAR(20) DEFAULT 'online', -- 'online', 'offline'
-    location_or_link TEXT,
-    notes TEXT,
-    invitees TEXT[] DEFAULT '{}',
-    google_calendar_event_id TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 1.4 Table Baru: google_calendar_credentials (Item 1.2)
-CREATE TABLE IF NOT EXISTS public.google_calendar_credentials (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL UNIQUE,
-    connected_email TEXT NOT NULL,
-    is_connected BOOLEAN DEFAULT TRUE,
-    auto_sync_enabled BOOLEAN DEFAULT TRUE,
-    access_token TEXT,
-    refresh_token TEXT,
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-
--- --------------------------------------------------------------------
--- 📁 DIVISI 2: ACCOUNT EXECUTIVE (AE)
--- --------------------------------------------------------------------
-
--- 2.1 Table Baru: quotations (Item 2.1 & 2.3)
+-- 3.4 Tabel Quotations (Penawaran Harga)
 CREATE TABLE IF NOT EXISTS public.quotations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    prospect_id UUID,
+    quotation_number VARCHAR(50) UNIQUE NOT NULL,
+    client_id UUID REFERENCES public.clients(id) ON DELETE SET NULL,
     client_name TEXT NOT NULL,
-    package_tier VARCHAR(20) DEFAULT 'TIER_B',
-    total_nominal NUMERIC(15,2) NOT NULL,
-    valid_until DATE,
-    scope_items JSONB DEFAULT '[]'::jsonb,
-    status VARCHAR(20) DEFAULT 'draft', -- 'draft', 'sent', 'accepted', 'rejected'
+    deal_id UUID REFERENCES public.deals(id) ON DELETE SET NULL,
+    issue_date TIMESTAMPTZ DEFAULT NOW(),
+    validity_days INT DEFAULT 30,
+    line_items JSONB DEFAULT '[]'::jsonb,
+    subtotal NUMERIC(15,2) NOT NULL,
+    tax NUMERIC(15,2) DEFAULT 0,
+    total NUMERIC(15,2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'draft', -- 'draft', 'sent', 'approved', 'rejected'
+    notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2.2 Table Baru: contracts (Item 2.2)
+-- 3.5 Tabel Contracts (Kontrak Kerjasama)
 CREATE TABLE IF NOT EXISTS public.contracts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     quotation_id UUID REFERENCES public.quotations(id) ON DELETE SET NULL,
@@ -109,9 +140,10 @@ CREATE TABLE IF NOT EXISTS public.contracts (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2.3 Table Baru: pitching_schedules (Item 2.4)
+-- 3.6 Tabel Pitching Schedules
 CREATE TABLE IF NOT EXISTS public.pitching_schedules (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    deal_id UUID REFERENCES public.deals(id) ON DELETE CASCADE,
     prospect_name TEXT NOT NULL,
     pitch_date TIMESTAMPTZ NOT NULL,
     meeting_mode VARCHAR(20) DEFAULT 'online', -- 'online', 'offline'
@@ -122,143 +154,175 @@ CREATE TABLE IF NOT EXISTS public.pitching_schedules (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-
 -- --------------------------------------------------------------------
--- 📁 DIVISI 3: TEAM PELAKSANA (DESIGN, PRODUCTION, PERFORMANCE)
+-- 📁 KELOMPOK 4: PM & MANAJEMEN PROYEK
 -- --------------------------------------------------------------------
 
--- 3.1 Table Baru: employee_workloads (Item 3.1)
-CREATE TABLE IF NOT EXISTS public.employee_workloads (
+-- 4.1 Tabel Projects
+CREATE TABLE IF NOT EXISTS public.projects (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    organization_id TEXT DEFAULT 'org_bertumbuh',
+    name TEXT NOT NULL,
+    client_id UUID REFERENCES public.clients(id) ON DELETE SET NULL,
+    client_name TEXT NOT NULL,
+    pm_id TEXT,
+    pm_name TEXT DEFAULT 'Belum Ditugaskan',
+    status VARCHAR(50) DEFAULT 'on_track', -- 'planning', 'on_track', 'at_risk', 'delayed', 'completed'
+    billing_type VARCHAR(20) DEFAULT 'project', -- 'project', 'retainer'
+    package_tier VARCHAR(20) DEFAULT 'TIER_B',
+    package_services TEXT[] DEFAULT '{}',
+    monthly_retainer_fee NUMERIC(15,2) DEFAULT 0,
+    contract_value NUMERIC(15,2) DEFAULT 0,
+    budget NUMERIC(15,2) DEFAULT 0,
+    actual_cost NUMERIC(15,2) DEFAULT 0,
+    start_date DATE,
+    end_date DATE,
+    sub_teams TEXT[] DEFAULT '{}',
+    members JSONB DEFAULT '[]'::jsonb,
+    milestones JSONB DEFAULT '[]'::jsonb,
+    reports JSONB DEFAULT '[]'::jsonb,
+    activities JSONB DEFAULT '[]'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4.2 Tabel Tasks (Tugas Pelaksana)
+CREATE TABLE IF NOT EXISTS public.tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    assignee_id TEXT,
+    assignee_name TEXT,
+    sub_team VARCHAR(50),
+    status VARCHAR(20) DEFAULT 'todo', -- 'todo', 'in_progress', 'review', 'done'
+    priority VARCHAR(20) DEFAULT 'medium', -- 'low', 'medium', 'high'
+    estimated_hours INT DEFAULT 0,
+    logged_hours INT DEFAULT 0,
+    due_date DATE,
+    evidence_link TEXT,
+    phase VARCHAR(20) DEFAULT 'ongoing',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4.3 Tabel Project Add-Ons (Scope Creep)
+CREATE TABLE IF NOT EXISTS public.project_add_ons (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    category VARCHAR(50) NOT NULL, -- 'TALENT_KOL', 'PRINTING', 'MEDIA_PLACEMENT', 'VENUE_RENTAL', 'OTHER'
+    procurement_cost NUMERIC(15,2) DEFAULT 0,
+    billing_price NUMERIC(15,2) DEFAULT 0,
+    invoiced BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4.4 Tabel Team Meetings
+CREATE TABLE IF NOT EXISTS public.team_meetings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    meeting_date TIMESTAMPTZ NOT NULL,
+    meeting_mode VARCHAR(20) DEFAULT 'online',
+    location_or_link TEXT,
+    notes TEXT,
+    invitees TEXT[] DEFAULT '{}',
+    google_calendar_event_id TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4.5 Tabel Google Calendar Credentials
+CREATE TABLE IF NOT EXISTS public.google_calendar_credentials (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL UNIQUE,
-    user_name TEXT NOT NULL,
-    weekly_hours_allocated NUMERIC(5,2) DEFAULT 0, -- Threshold max 40 hours/week
-    capacity_status VARCHAR(20) DEFAULT 'ideal', -- 'ideal', 'overloaded', 'available'
-    active_tasks_count INT DEFAULT 0,
+    connected_email TEXT NOT NULL,
+    is_connected BOOLEAN DEFAULT TRUE,
+    auto_sync_enabled BOOLEAN DEFAULT TRUE,
+    access_token TEXT,
+    refresh_token TEXT,
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3.2 Table Baru: ads_budget_records (Item 3.2)
-CREATE TABLE IF NOT EXISTS public.ads_budget_records (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
-    client_name TEXT NOT NULL,
-    platform VARCHAR(50) NOT NULL, -- 'META_ADS', 'GOOGLE_ADS', 'TIKTOK_ADS', 'SHOPEE_ADS'
-    budget_allocated NUMERIC(15,2) NOT NULL,
-    budget_spent NUMERIC(15,2) DEFAULT 0,
-    billing_sync_status VARCHAR(20) DEFAULT 'unbilled', -- 'unbilled', 'synced_to_finance', 'billed'
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 3.3 Table Baru: weekly_divisional_reports (Item 3.3)
-CREATE TABLE IF NOT EXISTS public.weekly_divisional_reports (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    week_number INT NOT NULL,
-    month VARCHAR(20) NOT NULL,
-    year INT NOT NULL,
-    division_name VARCHAR(50) NOT NULL, -- 'Design', 'Social Media', 'Video Production', 'Performance'
-    accomplishments TEXT,
-    blockers TEXT,
-    next_week_plan TEXT,
-    created_by TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-
 -- --------------------------------------------------------------------
--- 📁 DIVISI 4: FINANCE & ACCOUNTING
+-- 📁 KELOMPOK 5: FINANCE & ACCOUNTING
 -- --------------------------------------------------------------------
 
--- 4.1 Table Baru: chart_of_accounts (COA Master) (Item 4.5)
+-- 5.1 Tabel Chart of Accounts (COA Master)
 CREATE TABLE IF NOT EXISTS public.chart_of_accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     account_code VARCHAR(20) UNIQUE NOT NULL,
     account_name TEXT NOT NULL,
     account_category VARCHAR(50) NOT NULL, -- 'Asset', 'Liability', 'Equity', 'Revenue', 'Expense'
-    normal_balance VARCHAR(10) NOT NULL, -- 'Debet', 'Kredit'
+    normal_balance VARCHAR(10) NOT NULL, -- 'debit', 'credit'
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4.2 Table Baru: journal_entries (Jurnal & Buku Besar) (Item 4.4, 4.7, 4.8)
+-- 5.2 Tabel Journal Entries (Header Jurnal)
 CREATE TABLE IF NOT EXISTS public.journal_entries (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     entry_number VARCHAR(50) UNIQUE NOT NULL,
-    transaction_date DATE NOT NULL,
+    date DATE NOT NULL,
     description TEXT NOT NULL,
-    reference_id TEXT, -- Invoice ID, Reimburs ID, Payroll ID
-    is_simulation BOOLEAN DEFAULT FALSE, -- Mode Simulasi (Trial Run)
-    status VARCHAR(20) DEFAULT 'posted', -- 'posted', 'void'
-    voided_at TIMESTAMPTZ,
-    void_reason TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 4.3 Table Baru: journal_lines (Detail Debet/Kredit per Akun) (Item 4.7)
-CREATE TABLE IF NOT EXISTS public.journal_lines (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    journal_entry_id UUID REFERENCES public.journal_entries(id) ON DELETE CASCADE,
-    account_code VARCHAR(20) REFERENCES public.chart_of_accounts(account_code) ON UPDATE CASCADE,
+    account TEXT NOT NULL,
+    account_code VARCHAR(20) NOT NULL,
     account_name TEXT NOT NULL,
-    debit NUMERIC(15,2) DEFAULT 0,
-    credit NUMERIC(15,2) DEFAULT 0,
+    type VARCHAR(10) NOT NULL, -- 'debit', 'credit'
+    amount NUMERIC(15,2) NOT NULL,
+    reference_id TEXT,
+    is_simulation BOOLEAN DEFAULT FALSE,
+    is_voided BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4.4 Table Baru: invoices (Item 4.3 & 4.10)
+-- 5.3 Tabel Invoices
 CREATE TABLE IF NOT EXISTS public.invoices (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     invoice_number VARCHAR(50) UNIQUE NOT NULL,
+    client_id UUID REFERENCES public.clients(id) ON DELETE SET NULL,
     client_name TEXT NOT NULL,
-    issue_date DATE NOT NULL,
+    deal_id UUID REFERENCES public.deals(id) ON DELETE SET NULL,
+    project_name TEXT NOT NULL,
+    issue_date DATE,
     due_date DATE NOT NULL,
-    retainer_amount NUMERIC(15,2) DEFAULT 0,
-    kol_add_on_amount NUMERIC(15,2) DEFAULT 0,
-    ads_spend_reimburse_amount NUMERIC(15,2) DEFAULT 0,
-    subtotal NUMERIC(15,2) NOT NULL,
-    tax_amount NUMERIC(15,2) DEFAULT 0,
-    grand_total NUMERIC(15,2) NOT NULL,
-    status VARCHAR(20) DEFAULT 'unpaid', -- 'unpaid', 'paid', 'overdue', 'cancelled'
+    total NUMERIC(15,2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'draft', -- 'draft', 'sent', 'paid', 'overdue'
+    line_items JSONB DEFAULT '[]'::jsonb,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4.5 Table Baru: reimbursements (Item 4.6)
+-- 5.4 Tabel Reimbursements
 CREATE TABLE IF NOT EXISTS public.reimbursements (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    claimant_name TEXT NOT NULL,
-    category TEXT NOT NULL,
-    nominal NUMERIC(15,2) NOT NULL,
-    receipt_photo_url TEXT, -- Attachment Foto Nota
-    description TEXT,
-    status VARCHAR(20) DEFAULT 'pending', -- 'pending', 'approved', 'rejected'
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-
--- --------------------------------------------------------------------
--- 📁 DIVISI 5: HR & PEOPLE OPERATIONS
--- --------------------------------------------------------------------
-
--- 5.1 Table Baru: client_allocations (Item 5.1)
-CREATE TABLE IF NOT EXISTS public.client_allocations (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL,
     user_name TEXT NOT NULL,
-    department TEXT NOT NULL,
-    client_name TEXT NOT NULL,
-    project_name TEXT NOT NULL,
-    allocation_percent NUMERIC(5,2) NOT NULL, -- e.g. 40.00%
-    hours_per_week INT DEFAULT 0,
-    role_in_project TEXT,
+    title TEXT NOT NULL,
+    amount NUMERIC(15,2) NOT NULL,
+    date DATE NOT NULL,
+    notes TEXT,
+    attachment_url TEXT,
+    status VARCHAR(20) DEFAULT 'pending', -- 'pending', 'approved', 'rejected', 'paid'
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5.2 Table Baru: employee_leaves (Item 5.2)
+-- 5.5 Tabel Vendors
+CREATE TABLE IF NOT EXISTS public.vendors (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    category TEXT,
+    bank_account TEXT,
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- --------------------------------------------------------------------
+-- 📁 KELOMPOK 6: HR & PEOPLE OPERATIONS
+-- --------------------------------------------------------------------
+
+-- 6.1 Tabel Employee Leaves (Cuti)
 CREATE TABLE IF NOT EXISTS public.employee_leaves (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL,
+    user_id TEXT NOT NULL,
     user_name TEXT NOT NULL,
-    leave_type VARCHAR(50) NOT NULL, -- 'Tahunan', 'Sakit', 'Melahirkan', 'Penting'
+    type VARCHAR(50) NOT NULL, -- 'Tahunan', 'Sakit', 'Melahirkan', 'Penting'
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     duration_days INT NOT NULL,
@@ -267,28 +331,105 @@ CREATE TABLE IF NOT EXISTS public.employee_leaves (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5.3 Table Baru: employee_performance_metrics (Item 5.3)
+-- 6.2 Tabel Employee Overtimes (Lembur)
+CREATE TABLE IF NOT EXISTS public.employee_overtimes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id TEXT NOT NULL,
+    user_name TEXT NOT NULL,
+    project_id TEXT,
+    date TIMESTAMPTZ NOT NULL,
+    duration_hours NUMERIC(4,2) NOT NULL,
+    reason TEXT,
+    status VARCHAR(20) DEFAULT 'pending', -- 'pending', 'approved', 'declined', 'returned'
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6.3 Tabel Employee Attendances (Presensi)
+CREATE TABLE IF NOT EXISTS public.employee_attendances (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id TEXT NOT NULL,
+    user_name TEXT NOT NULL,
+    date DATE NOT NULL,
+    clock_in TIMESTAMPTZ,
+    clock_out TIMESTAMPTZ,
+    status VARCHAR(20) DEFAULT 'present',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6.4 Tabel Client Allocations (Matriks Alokasi Tim)
+CREATE TABLE IF NOT EXISTS public.client_allocations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id TEXT NOT NULL,
+    user_name TEXT NOT NULL,
+    department TEXT NOT NULL,
+    client_name TEXT NOT NULL,
+    project_name TEXT NOT NULL,
+    allocation_percent NUMERIC(5,2) NOT NULL,
+    hours_per_week INT DEFAULT 0,
+    role_in_project TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6.5 Tabel Employee Workloads
+CREATE TABLE IF NOT EXISTS public.employee_workloads (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id TEXT NOT NULL UNIQUE,
+    user_name TEXT NOT NULL,
+    weekly_hours_allocated NUMERIC(5,2) DEFAULT 0,
+    capacity_status VARCHAR(20) DEFAULT 'ideal',
+    active_tasks_count INT DEFAULT 0,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6.6 Tabel Ads Budget Records
+CREATE TABLE IF NOT EXISTS public.ads_budget_records (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
+    client_name TEXT NOT NULL,
+    platform VARCHAR(50) NOT NULL,
+    budget_allocated NUMERIC(15,2) NOT NULL,
+    budget_spent NUMERIC(15,2) DEFAULT 0,
+    billing_sync_status VARCHAR(20) DEFAULT 'unbilled',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6.7 Tabel Weekly Divisional Reports
+CREATE TABLE IF NOT EXISTS public.weekly_divisional_reports (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    week_number INT NOT NULL,
+    month VARCHAR(20) NOT NULL,
+    year INT NOT NULL,
+    division_name VARCHAR(50) NOT NULL,
+    accomplishments TEXT,
+    blockers TEXT,
+    next_week_plan TEXT,
+    created_by TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6.8 Tabel Employee Performance Metrics
 CREATE TABLE IF NOT EXISTS public.employee_performance_metrics (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL,
+    user_id TEXT NOT NULL,
     user_name TEXT NOT NULL,
     period_month INT NOT NULL,
     period_year INT NOT NULL,
     total_tasks INT DEFAULT 0,
     on_time_tasks INT DEFAULT 0,
     overdue_tasks INT DEFAULT 0,
-    overdue_rate NUMERIC(5,2) DEFAULT 0, -- e.g. 5.80%
+    overdue_rate NUMERIC(5,2) DEFAULT 0,
     avg_delay_days NUMERIC(4,2) DEFAULT 0,
-    discipline_rating NUMERIC(3,2) DEFAULT 5.00, -- 1.00 - 5.00
-    hr_recommendation TEXT, -- 'Bonus & Apresiasi', 'Kinerja Baik', 'Perlu Monitoring'
+    discipline_rating NUMERIC(3,2) DEFAULT 5.00,
+    hr_recommendation TEXT,
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5.4 Table Baru: payroll_records (Item 4.1 & 4.2)
+-- 6.9 Tabel Payroll Records (Penggajian)
 CREATE TABLE IF NOT EXISTS public.payroll_records (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL,
+    user_id TEXT NOT NULL,
     user_name TEXT NOT NULL,
+    department TEXT,
     month VARCHAR(20) NOT NULL,
     year INT NOT NULL,
     base_salary NUMERIC(15,2) NOT NULL,
@@ -301,54 +442,31 @@ CREATE TABLE IF NOT EXISTS public.payroll_records (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- --------------------------------------------------------------------
+-- 📁 KELOMPOK 7: KALENDER GLOBAL
+-- --------------------------------------------------------------------
+
+-- 7.1 Tabel Calendar Events
+CREATE TABLE IF NOT EXISTS public.calendar_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT NOT NULL,
+    description TEXT,
+    start_date DATE NOT NULL,
+    start_time VARCHAR(10),
+    end_date DATE NOT NULL,
+    end_time VARCHAR(10),
+    assignee_id TEXT,
+    assignee_name TEXT,
+    category VARCHAR(50) DEFAULT 'general',
+    color VARCHAR(50) DEFAULT 'var(--blue)',
+    created_by TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
 -- ====================================================================
--- 📦 SEED DATA MASTER COA (CHART OF ACCOUNTS)
+-- 🔒 ENABLE ROW LEVEL SECURITY (RLS) & OPEN POLICIES
 -- ====================================================================
-INSERT INTO public.chart_of_accounts (account_code, account_name, account_category, normal_balance)
-VALUES 
-    ('1010', 'Kas Utama & Bank Mandiri', 'Asset', 'Debet'),
-    ('1020', 'Piutang Usaha Retainer Klien', 'Asset', 'Debet'),
-    ('1030', 'Piutang Reimbursement Ads Spend', 'Asset', 'Debet'),
-    ('1040', 'Uang Muka Operasional & Vendor', 'Asset', 'Debet'),
-    ('2010', 'Hutang Gaji & Payroll Karyawan', 'Liability', 'Kredit'),
-    ('2020', 'Hutang Fee Talent & KOL', 'Liability', 'Kredit'),
-    ('2030', 'Hutang Pajak PPh 21 / PPh 23', 'Liability', 'Kredit'),
-    ('3010', 'Modal Disetor Pemegang Saham', 'Equity', 'Kredit'),
-    ('3020', 'Laba Ditahan (Retained Earnings)', 'Equity', 'Kredit'),
-    ('4010', 'Pendapatan Retainer Agency', 'Revenue', 'Kredit'),
-    ('4020', 'Pendapatan Add-on KOL Talent & Production', 'Revenue', 'Kredit'),
-    ('5010', 'Beban Gaji & Tunjangan Karyawan', 'Expense', 'Debet'),
-    ('5020', 'Beban Lembur & Overtime', 'Expense', 'Debet'),
-    ('5030', 'Beban Media Placement & Ads Spend', 'Expense', 'Debet'),
-    ('5040', 'Beban Operasional Kantor & Utilities', 'Expense', 'Debet')
-ON CONFLICT (account_code) DO NOTHING;
 
-
--- ====================================================================
--- 🔒 ROW LEVEL SECURITY (RLS) POLICIES & PERMISSIONS
--- ====================================================================
-ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.project_add_ons ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.team_meetings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.google_calendar_credentials ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.quotations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.contracts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.pitching_schedules ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.employee_workloads ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.ads_budget_records ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.weekly_divisional_reports ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.chart_of_accounts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.journal_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.journal_lines ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.invoices ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.reimbursements ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.client_allocations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.employee_leaves ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.employee_performance_metrics ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.payroll_records ENABLE ROW LEVEL SECURITY;
-
--- Allow all authenticated/app users full access to ERP tables
 DO $$ 
 DECLARE 
     tbl text;
@@ -359,10 +477,10 @@ BEGIN
         WHERE table_schema = 'public' 
         AND table_type = 'BASE TABLE'
     LOOP
+        EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', tbl);
         EXECUTE format('DROP POLICY IF EXISTS "Allow all access" ON public.%I', tbl);
         EXECUTE format('CREATE POLICY "Allow all access" ON public.%I FOR ALL USING (true) WITH CHECK (true)', tbl);
     END LOOP;
 END $$;
 
--- Script Selesai!
-
+-- Script Migration Supabase v1.0.0 Selesai!

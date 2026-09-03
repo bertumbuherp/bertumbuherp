@@ -8,7 +8,6 @@ import Link from 'next/link';
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
-  const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
   
   // Login State
   const [email, setEmail] = useState('');
@@ -17,12 +16,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Signup State (Mock)
-  const [signupName, setSignupName] = useState('');
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupOrg, setSignupOrg] = useState('');
-
-  // Modal & Dialog states (BUG-001 & BUG-002)
+  // Modal & Dialog states
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmailInput, setForgotEmailInput] = useState('');
   const [forgotSubmitted, setForgotSubmitted] = useState(false);
@@ -35,14 +29,9 @@ export default function LoginPage() {
     if (result.success && result.redirectTo) {
       router.push(result.redirectTo);
     } else {
-      setError(result.error || 'Login gagal. Coba lagi.');
+      setError(result.error || 'Login gagal. Periksa kembali email dan kata sandi Anda.');
       setLoading(false);
     }
-  };
-
-  const handleSignupSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`🎉 Permohonan Demo Agensi Terkirim!\n\nTerima kasih, ${signupName} dari ${signupOrg}.\nTim Bertumbuh ERP akan mengirimkan kredensial pengujian ke email ${signupEmail}.\n\nUntuk pengujian instan, Anda dapat beralih ke tab "Masuk" dan menggunakan Tombol Akses Cepat Demo.`);
   };
 
   const handleForgotSubmit = (e: React.FormEvent) => {
@@ -52,11 +41,11 @@ export default function LoginPage() {
   };
 
   const features = [
-    "Manajemen Proyek & Kanban Terintegrasi",
-    "CRM, Sales Pipeline & Database Klien",
+    "Manajemen Proyek & Kanban Operasional",
+    "CRM Pipeline & Database Klien Bertumbuh",
     "Human Resource, Cuti, & Database Karyawan",
-    "Finance, Payroll Otomatis & Tagihan",
-    "Multi-tenant & Role-Based Access Control"
+    "Finance, Payroll Otomatis & Tagihan Invoice",
+    "Sistem Otorisasi Role-Based (RBAC) Internal"
   ];
 
   return (
@@ -80,10 +69,10 @@ export default function LoginPage() {
           
           <div className="flex-1 flex flex-col justify-center">
             <h1 className="text-4xl font-bold text-white mb-6 leading-tight">
-              Sistem operasi terpadu <br/>untuk agensi modern.
+              Portal Operasional Terpadu <br/>PT Bertumbuh Creative.
             </h1>
             <p className="text-lg text-slate-300 mb-10 leading-relaxed max-w-md">
-              Otomatiskan alur kerja tim Anda mulai dari prospek klien pertama, hingga penggajian karyawan bulan ini.
+              Sistem manajemen internal terintegrasi untuk mengelola proyek, CRM, SDM, dan keuangan agensi secara efisien.
             </p>
 
             <div className="space-y-4">
@@ -97,7 +86,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-16 border-t border-slate-700 pt-6">
-            <p className="text-sm text-slate-400">© 2026 Bertumbuh Creative Agency.</p>
+            <p className="text-sm text-slate-400">© 2026 PT Bertumbuh Creative Agency. Internal System.</p>
           </div>
         </div>
       </div>
@@ -114,137 +103,64 @@ export default function LoginPage() {
             <span className="font-bold text-2xl" style={{ color: 'var(--text-primary)' }}>Bertumbuh ERP</span>
           </div>
 
-          {/* Demo Sandbox Banner (BUG-004) */}
-          <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-2 text-xs text-amber-800 font-semibold shadow-xs">
-            <span className="px-2 py-0.5 bg-amber-200 text-amber-900 rounded font-black text-[10px]">DEMO ACCESS</span>
-            <span>Lingkungan Sandbox Aktif — Pilih role akun di bawah untuk uji coba.</span>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex w-full mb-8 bg-gray-100 p-1 rounded-xl">
-            <button 
-              className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all cursor-pointer ${activeTab === 'login' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
-              onClick={() => { setActiveTab('login'); setError(''); }}
-            >
-              Masuk
-            </button>
-            <button 
-              className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all cursor-pointer ${activeTab === 'signup' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
-              onClick={() => { setActiveTab('signup'); setError(''); }}
-            >
-              Ajukan Demo
-            </button>
-          </div>
-
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-2 text-gray-900">
-              {activeTab === 'login' ? 'Selamat Datang Kembali!' : 'Ajukan Akses Demo Agensi'}
+              Selamat Datang Tim Bertumbuh!
             </h2>
             <p className="text-sm text-gray-500">
-              {activeTab === 'login' ? 'Silakan masukkan kredensial Anda untuk masuk ke sistem.' : 'Daftarkan agensi Anda untuk berkonsultasi & mencoba sistem ERP.'}
+              Silakan masukkan email akun internal dan kata sandi Anda untuk mengakses portal.
             </p>
           </div>
 
-          {activeTab === 'login' ? (
-            <form onSubmit={handleLoginSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Email Akun</label>
-                <div className="relative">
-                  <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-red-500 transition-colors" placeholder="email@agensi.id" required />
-                </div>
+          <form onSubmit={handleLoginSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Email Akun Internal</label>
+              <div className="relative">
+                <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-red-500 transition-colors" placeholder="nama@bertumbuh.id" required />
               </div>
-              
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-semibold text-gray-700">Kata Sandi</label>
-                  <button 
-                    type="button" 
-                    onClick={() => { setShowForgotModal(true); setForgotSubmitted(false); setForgotEmailInput(email); }} 
-                    className="text-xs font-semibold text-red-600 hover:text-red-700 cursor-pointer"
-                  >
-                    Lupa sandi?
-                  </button>
-                </div>
-                <div className="relative">
-                  <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type={showPwd ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-red-500 transition-colors" placeholder="••••••••" required />
-                  <button 
-                    type="button" 
-                    onClick={() => setShowPwd(!showPwd)}
-                    aria-label={showPwd ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 cursor-pointer"
-                  >
-                    {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-semibold text-gray-700">Kata Sandi</label>
+                <button 
+                  type="button" 
+                  onClick={() => { setShowForgotModal(true); setForgotSubmitted(false); setForgotEmailInput(email); }} 
+                  className="text-xs font-semibold text-red-600 hover:text-red-700 cursor-pointer"
+                >
+                  Lupa sandi?
+                </button>
               </div>
+              <div className="relative">
+                <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type={showPwd ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-red-500 transition-colors" placeholder="••••••••" required />
+                <button 
+                  type="button" 
+                  onClick={() => setShowPwd(!showPwd)}
+                  aria-label={showPwd ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 cursor-pointer"
+                >
+                  {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
 
-              {error && (
-                <div className="p-3 rounded-lg text-sm bg-red-50 text-red-600 border border-red-100 font-medium">
-                  {error}
-                </div>
-              )}
+            {error && (
+              <div className="p-3 rounded-lg text-sm bg-red-50 text-red-600 border border-red-100 font-medium">
+                {error}
+              </div>
+            )}
 
-              <button type="submit" disabled={loading}
-                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-red-600/20 mt-4 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer">
-                {loading
-                  ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  : <><LogIn size={18} /><span>Masuk ke ERP</span></>}
-              </button>
-
-              {/* Demo Accounts Wrapper */}
-              <div className="pt-6 mt-6 border-t border-gray-100">
-                <p className="text-xs font-semibold text-gray-500 mb-3 text-center uppercase tracking-wider">Akses Cepat Mode Demo</p>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  <button type="button" onClick={() => { setEmail('reza@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200 cursor-pointer">Owner</button>
-                  <button type="button" onClick={() => { setEmail('dewi@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200 cursor-pointer">PM</button>
-                  <button type="button" onClick={() => { setEmail('hadi@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200 cursor-pointer">Finance</button>
-                  <button type="button" onClick={() => { setEmail('andi@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200 cursor-pointer">AE (CRM)</button>
-                  <button type="button" onClick={() => { setEmail('siti@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-md hover:bg-gray-200 cursor-pointer">HR</button>
-                  <button type="button" onClick={() => { setEmail('risa@bertumbuh.id'); setPassword('demo123'); }} className="text-[10px] bg-blue-50 text-blue-700 font-bold py-1.5 px-3 rounded-md hover:bg-blue-100 border border-blue-200 cursor-pointer">Karyawan</button>
-                </div>
-              </div>
-            </form>
-          ) : (
-            <form onSubmit={handleSignupSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Nama Lengkap Pemohon</label>
-                <input type="text" value={signupName} onChange={e => setSignupName(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-red-500 transition-colors" placeholder="Budi Santoso" required />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Nama Organisasi / Agensi</label>
-                <div className="relative">
-                  <Building2 size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type="text" value={signupOrg} onChange={e => setSignupOrg(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-red-500 transition-colors" placeholder="PT Kreatif Maju Bersama" required />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Email Pekerjaan</label>
-                <div className="relative">
-                  <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type="email" value={signupEmail} onChange={e => setSignupEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-red-500 transition-colors" placeholder="budi@agensi.id" required />
-                </div>
-              </div>
-
-              <button type="submit"
-                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-6 cursor-pointer">
-                Ajukan Demo Agensi ↗
-              </button>
-              
-              <p className="text-xs text-center text-gray-500 mt-4 leading-relaxed">
-                Dengan mengajukan demo, Anda menyetujui{' '}
-                <button type="button" onClick={() => setLegalModalContent('terms')} className="text-red-600 hover:underline font-medium cursor-pointer">Syarat &amp; Ketentuan</button>{' '}
-                serta{' '}
-                <button type="button" onClick={() => setLegalModalContent('privacy')} className="text-red-600 hover:underline font-medium cursor-pointer">Kebijakan Privasi</button> kami.
-              </p>
-            </form>
-          )}
+            <button type="submit" disabled={loading}
+              className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-red-600/20 mt-4 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer">
+              {loading
+                ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                : <><LogIn size={18} /><span>Masuk ke Portal Internal</span></>}
+            </button>
+          </form>
 
         </div>
       </div>

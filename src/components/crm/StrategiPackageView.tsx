@@ -105,10 +105,10 @@ export function StrategiPackageView() {
                 </button>
               </div>
 
-              {/* Demo Action (Mock approval workflow directly from view) */}
+              {/* Action Approval Workflow */}
               {pkg.status === 'pending' && (
                 <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-between border border-gray-100 mt-2">
-                  <span className="text-[10px] text-gray-500 font-bold uppercase">Mock Approval:</span>
+                  <span className="text-[10px] text-gray-500 font-bold uppercase">Persetujuan Direksi:</span>
                   <div className="flex gap-1">
                     <button 
                       onClick={() => updatePackageStatus(pkg.id, 'approved')}

@@ -185,8 +185,8 @@ export const ROLE_PERMISSIONS: Record<Role, PermissionMap> = {
 
 /** Sidebar nav items visible per role */
 export const ROLE_NAV: Record<Role, string[]> = {
-  owner:       ['/ceo', '/pm', '/crm', '/finance', '/hr', '/team_member'],
-  super_admin: ['/pm', '/crm', '/finance', '/hr', '/team_member'],
+  owner:       ['/ceo', '/super_admin', '/pm', '/crm', '/finance', '/hr', '/team_member'],
+  super_admin: ['/super_admin'],
   ae:          ['/crm'],
   pm:          ['/pm'],
   finance:     ['/finance'],
@@ -197,7 +197,7 @@ export const ROLE_NAV: Record<Role, string[]> = {
 /** Default redirect after login per role */
 export const ROLE_DEFAULT_ROUTE: Record<Role, string> = {
   owner:       '/ceo/dashboard',
-  super_admin: '/pm/dashboard',
+  super_admin: '/super_admin',
   ae:          '/crm/dashboard',
   pm:          '/pm/dashboard',
   finance:     '/finance/dashboard',
