@@ -6,9 +6,8 @@ import {
   Search, BookOpen, ShieldCheck, Users, Activity, Server, TrendingUp,
   FolderKanban, FolderTree, DollarSign, CalendarDays, CreditCard, FileSpreadsheet,
   UserCheck, Clock, UserMinus, Layers, FileText, Send, Receipt,
-  Building, Calculator, ChevronDown, ChevronRight, ArrowLeft, Printer,
-  ExternalLink, Sparkles, CheckCircle2, HelpCircle, Info, Briefcase,
-  Award, Scale, ArrowLeftRight, PieChart, Landmark, Wallet, LogIn
+  Building, Calculator, ChevronDown, ChevronRight, Printer,
+  ExternalLink, Sparkles, CheckCircle2, Info, Briefcase, LogIn, ArrowRight
 } from 'lucide-react';
 
 interface ManualTopic {
@@ -27,12 +26,12 @@ interface ManualTopic {
 
 const MANUAL_TOPICS: ManualTopic[] = [
   // ==========================================
-  // 👑 OWNER / CEO
+  // OWNER / CEO
   // ==========================================
   {
     id: 'owner-summary',
     role: 'owner',
-    roleName: '👑 Owner / CEO',
+    roleName: 'Owner / CEO',
     category: 'Eksekutif & Oversight',
     title: 'Ringkasan Eksekutif & Health Check Perusahaan',
     summary: 'Memantau performa kesehatan bisnis, pendapatan, proyek aktif, dan efisiensi tim secara menyeluruh.',
@@ -51,7 +50,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'owner-finance-auth',
     role: 'owner',
-    roleName: '👑 Owner / CEO',
+    roleName: 'Owner / CEO',
     category: 'Otorisasi Finansial',
     title: 'Otorisasi Finansial & Pengeluaran Skala Besar',
     summary: 'Persetujuan akhir untuk pengeluaran di atas ambang batas (threshold), pengajuan modal, dan pembayaran vendor utama.',
@@ -69,7 +68,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'owner-reports',
     role: 'owner',
-    roleName: '👑 Owner / CEO',
+    roleName: 'Owner / CEO',
     category: 'Reporting Eksekutif',
     title: 'Laporan Konsolidasi BOD & Keuangan Perusahaan',
     summary: 'Melihat laporan keuangan terstruktur untuk Dewan Direksi (BOD), laporan laba rugi konsolidasi, dan proyeksi arus kas.',
@@ -86,12 +85,12 @@ const MANUAL_TOPICS: ManualTopic[] = [
   },
 
   // ==========================================
-  // 🛡️ SUPER ADMIN
+  // SUPER ADMIN
   // ==========================================
   {
     id: 'admin-users',
     role: 'super_admin',
-    roleName: '🛡️ Super Admin',
+    roleName: 'Super Admin',
     category: 'User & Permission Management',
     title: 'Manajemen Akun User & Penetapan Hak Akses Role',
     summary: 'Menambah user baru, memperbarui role (Owner, Finance, HR, PM, AE, Team Member), mereset password, dan mengaktifkan/menonaktifkan akun.',
@@ -110,7 +109,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'admin-audit',
     role: 'super_admin',
-    roleName: '🛡️ Super Admin',
+    roleName: 'Super Admin',
     category: 'Keamanan & Audit',
     title: 'Pengawasan Log Aktivitas (Audit Trail)',
     summary: 'Melacak seluruh riwayat tindakan pengguna di sistem (login, ubah data, hapus data, otorisasi transaksi, export laporan).',
@@ -128,7 +127,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'admin-health',
     role: 'super_admin',
-    roleName: '🛡️ Super Admin',
+    roleName: 'Super Admin',
     category: 'System Administration',
     title: 'Monitoring Status Sistem & Kesehatan Database',
     summary: 'Memantau koneksi Supabase Cloud PostgreSQL, latensi API, kapasitas penyimpanan, dan penanganan error log backend.',
@@ -145,12 +144,12 @@ const MANUAL_TOPICS: ManualTopic[] = [
   },
 
   // ==========================================
-  // 💰 FINANCE MANAGER
+  // FINANCE MANAGER
   // ==========================================
   {
     id: 'fin-accounting-entry',
     role: 'finance',
-    roleName: '💰 Finance Manager',
+    roleName: 'Finance Manager',
     category: 'Accounting & Buku Besar',
     title: 'Input Jurnal Akuntansi & Simulasi Transaksi',
     summary: 'Mencatat entri jurnal umum, penyesuaian debit/kredit, dan menguji keseimbangan saldo transaksi sebelum dibukukan.',
@@ -170,7 +169,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'fin-coa',
     role: 'finance',
-    roleName: '💰 Finance Manager',
+    roleName: 'Finance Manager',
     category: 'Master Data Keuangan',
     title: 'Pengelolaan Chart of Accounts (Master COA)',
     summary: 'Mengatur kode akun standar perusahaan (Aset, Liabilitas, Ekuitas, Pendapatan, Beban Operasional).',
@@ -188,7 +187,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'fin-cashflow',
     role: 'finance',
-    roleName: '💰 Finance Manager',
+    roleName: 'Finance Manager',
     category: 'Laporan Keuangan',
     title: 'Laporan Arus Kas 3 Aktivitas (Cash Flow)',
     summary: 'Analisis pergerakan kas dari Aktivitas Operasional, Aktivitas Investasi, dan Aktivitas Pendanaan secara tepat.',
@@ -202,12 +201,12 @@ const MANUAL_TOPICS: ManualTopic[] = [
       'Periksa Saldo Akhir Kas yang terekonsiliasi dengan rekening bank.'
     ],
     tips: 'Saldo akhir kas pada laporan ini harus cocok dengan total saldo di Tab Kas & Bank.',
-    icon: ArrowLeftRight,
+    icon: DollarSign,
   },
   {
     id: 'fin-invoicing',
     role: 'finance',
-    roleName: '💰 Finance Manager',
+    roleName: 'Finance Manager',
     category: 'Piutang & Invoicing',
     title: 'Penagihan Invoice & Penerimaan Pembayaran Klien',
     summary: 'Membuat invoice tagihan berdasarkan Quotation AE, mengirimkan ke klien, dan mencatat bukti penerimaan pembayaran.',
@@ -227,7 +226,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'fin-reimbursement',
     role: 'finance',
-    roleName: '💰 Finance Manager',
+    roleName: 'Finance Manager',
     category: 'Pengeluaran Tim',
     title: 'Verifikasi & Pencairan Reimbursement Tim',
     summary: 'Memeriksa keabsahan bukti nota pengajuan klaim biaya dari tim operasional dan mengotorisasi transfer pencairan.',
@@ -245,7 +244,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'fin-payroll',
     role: 'finance',
-    roleName: '💰 Finance Manager',
+    roleName: 'Finance Manager',
     category: 'Gaji & Vendor',
     title: 'Proses Pencairan Payroll Gaji & Fee Freelance',
     summary: 'Menerima draf perhitungkan payroll dari HR Manager dan melakukan pembayaran gaji rutin serta fee vendor / freelancer.',
@@ -263,12 +262,12 @@ const MANUAL_TOPICS: ManualTopic[] = [
   },
 
   // ==========================================
-  // 👥 HR MANAGER
+  // HR MANAGER
   // ==========================================
   {
     id: 'hr-matrix',
     role: 'hr',
-    roleName: '👥 HR Manager',
+    roleName: 'HR Manager',
     category: 'Alokasi & Capacity Planning',
     title: 'Matriks Alokasi Tim & Beban Kerja (Workload)',
     summary: 'Memantau tingkat alokasi kapasitas karyawan (Under-allocated, Optimal, Over-allocated) untuk mencegah burnout.',
@@ -286,7 +285,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'hr-cuti-guarding',
     role: 'hr',
-    roleName: '👥 HR Manager',
+    roleName: 'HR Manager',
     category: 'Manajemen Cuti',
     title: 'Guarding Cuti PM & Final Approval Cuti Karyawan',
     summary: 'Memeriksa pengajuan cuti yang telah disetujui PM, memastikan ketersediaan sisa kuota cuti tahunan, dan verifikasi akhir.',
@@ -304,7 +303,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'hr-payroll-calc',
     role: 'hr',
-    roleName: '👥 HR Manager',
+    roleName: 'HR Manager',
     category: 'Payroll & Kompensasi',
     title: 'Perhitungan Payroll Gaji Bulanan & Fee Freelance',
     summary: 'Mengkalkulasi akumulasi gaji pokok, tunjangan, potongan absensi/terlambat, lembur disetujui, dan fee tim freelance.',
@@ -323,7 +322,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'hr-employees',
     role: 'hr',
-    roleName: '👥 HR Manager',
+    roleName: 'HR Manager',
     category: 'Database Karyawan',
     title: 'Manajemen Database Karyawan & Kontrak Kerja',
     summary: 'Mengelola berkas profil karyawan, nomor identitas, tanggal bergabung, status hubungan kerja (Permanent/Contract/Freelance).',
@@ -341,12 +340,12 @@ const MANUAL_TOPICS: ManualTopic[] = [
   },
 
   // ==========================================
-  // 📂 PROJECT MANAGER (PM)
+  // PROJECT MANAGER (PM)
   // ==========================================
   {
     id: 'pm-overview',
     role: 'pm',
-    roleName: '📂 Project Manager (PM)',
+    roleName: 'Project Manager (PM)',
     category: 'Project Management',
     title: 'PM Dashboard & Monitoring Multi-Proyek',
     summary: 'Melihat status perkembangan seluruh proyek aktif agency, persentase penyelesaian milestone, dan peringatan keterlambatan (delays).',
@@ -364,7 +363,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'pm-projects-detail',
     role: 'pm',
-    roleName: '📂 Project Manager (PM)',
+    roleName: 'Project Manager (PM)',
     category: 'Eksekusi Proyek',
     title: 'Detail Proyek, Alokasi Task & Timeline Kanban',
     summary: 'Membuat task baru, menentukan assignee (penanggung jawab), mengatur priority, deadline, serta mengontrol Kanban Board proyek.',
@@ -383,7 +382,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'pm-leave-approval',
     role: 'pm',
-    roleName: '📂 Project Manager (PM)',
+    roleName: 'Project Manager (PM)',
     category: 'Manajemen Tim Proyek',
     title: 'Approval Cuti Anggota Tim Proyek',
     summary: 'Meninjau pengajuan cuti dari anggota tim proyek untuk memastikan jadwal pengajuan tidak mengganggu penyelesaian deadline proyek.',
@@ -401,7 +400,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'pm-reports',
     role: 'pm',
-    roleName: '📂 Project Manager (PM)',
+    roleName: 'Project Manager (PM)',
     category: 'Client Reporting',
     title: 'Penyusunan Report Progress Klien & Delay Analysis',
     summary: 'Meng-generate laporan status berkala untuk disampaikan kepada klien dan menganalisis penyebab penundaan pengerjaan.',
@@ -419,12 +418,12 @@ const MANUAL_TOPICS: ManualTopic[] = [
   },
 
   // ==========================================
-  // 📈 ACCOUNT EXECUTIVE (AE)
+  // ACCOUNT EXECUTIVE (AE)
   // ==========================================
   {
     id: 'ae-leads',
     role: 'ae',
-    roleName: '📈 Account Executive (AE)',
+    roleName: 'Account Executive (AE)',
     category: 'CRM & Pipeline Sales',
     title: 'Listing Prospek New Client & Management Leads',
     summary: 'Mencatat prospek klien baru (Online/Offline), melacak status stage pipeline CRM, dan mengelola kontak keputusan klien.',
@@ -442,7 +441,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'ae-quotation',
     role: 'ae',
-    roleName: '📈 Account Executive (AE)',
+    roleName: 'Account Executive (AE)',
     category: 'Penawaran & Kontrak',
     title: 'Generator Quotation (Penawaran) & Kontrak Kerjasama',
     summary: 'Membuat dokumen resmi Quotation Penawaran Harga Layanan Agency dan menerbitkan draf Kontrak Perjanjian Kerjasama.',
@@ -462,7 +461,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'ae-clients',
     role: 'ae',
-    roleName: '📈 Account Executive (AE)',
+    roleName: 'Account Executive (AE)',
     category: 'Direktori Klien',
     title: 'Manajemen Direktori Klien & Retainer History',
     summary: 'Melihat direktori lengkap seluruh klien aktif & alumni agency, histori transaksi, serta masa berlaku paket retainer.',
@@ -479,12 +478,12 @@ const MANUAL_TOPICS: ManualTopic[] = [
   },
 
   // ==========================================
-  // 💻 TEAM MEMBER
+  // TEAM MEMBER
   // ==========================================
   {
     id: 'team-dashboard',
     role: 'team_member',
-    roleName: '💻 Team Member (Anggota Tim)',
+    roleName: 'Team Member',
     category: 'Dashboard Personal',
     title: 'Dashboard Personal & Task Summary Harian',
     summary: 'Melihat ringkasan tugas proyek yang ditugaskan kepada Anda, prioritas deadline harian, dan absensi jam kerja.',
@@ -502,7 +501,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'team-projects',
     role: 'team_member',
-    roleName: '💻 Team Member (Anggota Tim)',
+    roleName: 'Team Member',
     category: 'Eksekusi Pekerjaan',
     title: 'Manajemen Proyek & Update Progress Task',
     summary: 'Mengerjakan tugas proyek, mengunggah bukti hasil kerja (link Figma, Drive, Code), dan memperbarui status task.',
@@ -521,7 +520,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'team-overtime',
     role: 'team_member',
-    roleName: '💻 Team Member (Anggota Tim)',
+    roleName: 'Team Member',
     category: 'Pengajuan Mandiri',
     title: 'Pengajuan Jam Lembur (Overtime Claim)',
     summary: 'Mengajukan klaim jam lembur resmi jika diminta pengerjaan di luar jam kerja reguler untuk diverifikasi oleh HR & Finance.',
@@ -540,7 +539,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'team-cuti',
     role: 'team_member',
-    roleName: '💻 Team Member (Anggota Tim)',
+    roleName: 'Team Member',
     category: 'Pengajuan Mandiri',
     title: 'Pengajuan Cuti Karyawan',
     summary: 'Mengajukan permohonan cuti tahunan / cuti khusus secara online dan memantau sisa kuota cuti pribadi Anda.',
@@ -559,7 +558,7 @@ const MANUAL_TOPICS: ManualTopic[] = [
   {
     id: 'team-reimbursement',
     role: 'team_member',
-    roleName: '💻 Team Member (Anggota Tim)',
+    roleName: 'Team Member',
     category: 'Pengajuan Mandiri',
     title: 'Klaim Reimbursement Operasional',
     summary: 'Mengajukan penggantian uang untuk pengeluaran operasional proyek pribadi (bensin, meeting klien, pembelian aset kecil).',
@@ -578,14 +577,14 @@ const MANUAL_TOPICS: ManualTopic[] = [
 ];
 
 const ROLES_LIST = [
-  { id: 'all', label: 'Semua Role', icon: Sparkles, color: 'from-emerald-600 to-teal-600' },
-  { id: 'owner', label: '👑 Owner / CEO', icon: ShieldCheck, color: 'from-amber-500 to-orange-600' },
-  { id: 'super_admin', label: '🛡️ Super Admin', icon: Server, color: 'from-red-600 to-rose-700' },
-  { id: 'finance', label: '💰 Finance Manager', icon: DollarSign, color: 'from-emerald-600 to-teal-700' },
-  { id: 'hr', label: '👥 HR Manager', icon: Users, color: 'from-blue-600 to-indigo-700' },
-  { id: 'pm', label: '📂 Project Manager (PM)', icon: FolderKanban, color: 'from-purple-600 to-violet-700' },
-  { id: 'ae', label: '📈 Account Executive (AE)', icon: TrendingUp, color: 'from-pink-600 to-rose-600' },
-  { id: 'team_member', label: '💻 Team Member', icon: Briefcase, color: 'from-cyan-600 to-blue-600' },
+  { id: 'all', label: 'Semua Role', icon: Sparkles },
+  { id: 'owner', label: 'Owner / CEO', icon: ShieldCheck },
+  { id: 'super_admin', label: 'Super Admin', icon: Server },
+  { id: 'finance', label: 'Finance Manager', icon: DollarSign },
+  { id: 'hr', label: 'HR Manager', icon: Users },
+  { id: 'pm', label: 'Project Manager (PM)', icon: FolderKanban },
+  { id: 'ae', label: 'Account Executive (AE)', icon: TrendingUp },
+  { id: 'team_member', label: 'Team Member', icon: Briefcase },
 ];
 
 export default function PublicManualGuidePage() {
@@ -619,124 +618,95 @@ export default function PublicManualGuidePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col print:bg-white print:text-black">
-      {/* Top Header Navbar */}
-      <header className="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-sm print:hidden">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans print:bg-white print:text-black">
+      {/* Minimalist Clean Top Header */}
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shadow-xs print:hidden">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-emerald-600/20">
+          <div className="w-8 h-8 rounded-full bg-[#E8304A] flex items-center justify-center text-white font-bold text-sm shadow-xs">
             B
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-extrabold text-slate-900 dark:text-white text-lg tracking-tight">
+              <h1 className="font-bold text-slate-900 text-sm leading-tight tracking-tight">
                 Bertumbuh Agency ERP
               </h1>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold tracking-wide uppercase border border-emerald-300 dark:border-emerald-800">
+              <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[11px] font-medium border border-slate-200">
                 User Manual v1.0
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Panduan Pengoperasian Sistem Terpadu Per Role & Fungsi
+            <p className="text-[11px] text-slate-500 leading-tight">
+              Panduan Operasional Per Role & Fitur
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={handlePrint}
-            className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium hover:bg-slate-50 transition-colors shadow-2xs"
           >
-            <Printer size={15} /> Cetak / Save PDF
+            <Printer size={14} /> Cetak / PDF
           </button>
           <Link
             href="/login"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02]"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#E8304A] hover:bg-[#FF4D6A] text-white text-xs font-semibold shadow-xs transition-colors"
           >
-            <LogIn size={15} /> Masuk ke App ERP
+            <LogIn size={14} /> Masuk ke App ERP
           </Link>
         </div>
       </header>
 
-      {/* Hero Banner Section */}
-      <section className="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 text-white px-4 lg:px-8 py-10 lg:py-14 print:hidden border-b border-emerald-900/40 relative overflow-hidden">
-        {/* Decorative background glow */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-10 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="max-w-2xl space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-                <BookOpen size={14} /> Official Standard Operating Procedure (SOP)
-              </div>
-              <h2 className="text-2xl lg:text-4xl font-black text-white tracking-tight leading-tight">
-                Pusat Panduan & Operasional <br className="hidden sm:block" />
-                <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                  PT Bertumbuh Creative Agency
-                </span>
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                Panduan lengkap dan instruksi langkah-demi-langkah penggunaan modul ERP bagi 7 role utama:
-                Owner, Super Admin, Finance Manager, HR Manager, Project Manager, Account Executive, dan Team Member.
-              </p>
-            </div>
-
-            {/* Quick Stats Badges */}
-            <div className="grid grid-cols-2 gap-3 shrink-0">
-              <div className="bg-white/10 backdrop-blur-md border border-white/10 p-3.5 rounded-2xl text-center">
-                <p className="text-2xl font-black text-emerald-400">7 Role</p>
-                <p className="text-[11px] text-slate-300 font-medium mt-0.5">Hak Akses Sistem</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md border border-white/10 p-3.5 rounded-2xl text-center">
-                <p className="text-2xl font-black text-teal-400">40+ Modul</p>
-                <p className="text-[11px] text-slate-300 font-medium mt-0.5">Prosedur Operasional</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md border border-white/10 p-3.5 rounded-2xl text-center col-span-2">
-                <p className="text-xs font-bold text-emerald-300 flex items-center justify-center gap-1.5">
-                  <CheckCircle2 size={14} /> 100% Real Operational State
-                </p>
-              </div>
-            </div>
+      {/* Clean Minimal Hero Header */}
+      <section className="bg-white border-b border-slate-200 px-6 py-8 print:hidden">
+        <div className="max-w-5xl mx-auto space-y-4">
+          <div className="space-y-1.5">
+            <span className="text-[11px] font-semibold tracking-wider text-[#E8304A] uppercase bg-rose-50 border border-rose-100 px-2.5 py-1 rounded-md inline-block">
+              Standard Operating Procedure (SOP)
+            </span>
+            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+              Panduan Penggunaan Bertumbuh ERP
+            </h2>
+            <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
+              Petunjuk operasional langkah-demi-langkah bagi seluruh role pengguna (Owner, Super Admin, Finance, HR, PM, AE, dan Team Member).
+            </p>
           </div>
 
-          {/* Instant Search Bar */}
-          <div className="mt-8 relative max-w-3xl">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari fitur atau instruksi (contoh: reimbursement, cuti, jurnal, quotation, invoice, lembur)..."
-                className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white placeholder-slate-400 text-sm font-medium border border-slate-200 dark:border-slate-800 shadow-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-600 dark:text-slate-300 px-2 py-1 rounded-lg transition-colors"
-                >
-                  Reset
-                </button>
-              )}
-            </div>
+          {/* Minimalist Search Bar */}
+          <div className="relative max-w-2xl pt-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari instruksi (contoh: reimbursement, cuti, jurnal, quotation, invoice, lembur)..."
+              className="w-full pl-9 pr-10 py-2.5 rounded-lg bg-[#F9FAFB] text-slate-900 placeholder-slate-400 text-xs font-medium border border-slate-200 shadow-2xs focus:outline-none focus:border-[#E8304A] focus:bg-white transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] bg-slate-200 hover:bg-slate-300 text-slate-600 px-2 py-0.5 rounded-md transition-colors"
+              >
+                Clear
+              </button>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 lg:px-8 py-8 space-y-8">
-        {/* Role Tab Navigation Bar */}
+      {/* Main Container */}
+      <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-6 space-y-6">
+        {/* Minimalist Role Pill Tabs */}
         <section className="print:hidden">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Filter Berdasarkan Role Pengguna
-            </h3>
-            <span className="text-xs text-slate-500 font-medium">
+          <div className="flex items-center justify-between mb-2.5">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+              Pilih Role Pengguna
+            </span>
+            <span className="text-[11px] text-slate-400 font-medium">
               Menampilkan {filteredTopics.length} dari {MANUAL_TOPICS.length} Prosedur
             </span>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none">
             {ROLES_LIST.map((r) => {
               const IconComp = r.icon;
               const isActive = selectedRole === r.id;
@@ -744,13 +714,13 @@ export default function PublicManualGuidePage() {
                 <button
                   key={r.id}
                   onClick={() => setSelectedRole(r.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap border shrink-0 ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap border shrink-0 ${
                     isActive
-                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-500 shadow-md shadow-emerald-600/20'
-                      : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-slate-300'
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                      : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900'
                   }`}
                 >
-                  <IconComp size={15} />
+                  <IconComp size={14} className={isActive ? 'text-rose-400' : 'text-slate-400'} />
                   {r.label}
                 </button>
               );
@@ -758,140 +728,123 @@ export default function PublicManualGuidePage() {
           </div>
         </section>
 
-        {/* Results List */}
+        {/* Topic Accordions */}
         {filteredTopics.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto">
-              <HelpCircle size={24} />
-            </div>
-            <h4 className="text-lg font-bold text-slate-900 dark:text-white">
-              Tidak Ada Panduan Ditemukan
-            </h4>
-            <p className="text-sm text-slate-500 max-w-md mx-auto">
-              Kata kunci <span className="font-semibold text-slate-800 dark:text-slate-200">"{searchQuery}"</span> tidak cocok dengan instruksi role manapun. Coba cari dengan kata kunci lain.
+          <div className="bg-white border border-slate-200 rounded-xl p-10 text-center space-y-2">
+            <p className="text-sm font-semibold text-slate-800">
+              Tidak ada panduan ditemukan
+            </p>
+            <p className="text-xs text-slate-500">
+              Kata kunci <span className="font-semibold text-slate-700">"{searchQuery}"</span> tidak cocok dengan instruksi manapun.
             </p>
             <button
               onClick={() => {
                 setSearchQuery('');
                 setSelectedRole('all');
               }}
-              className="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-200 transition-colors"
+              className="mt-2 text-xs font-medium text-[#E8304A] hover:underline"
             >
-              Reset Filter & Pencarian
+              Reset Filter
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
-            {filteredTopics.map((topic, index) => {
+          <div className="space-y-3">
+            {filteredTopics.map((topic) => {
               const TopicIcon = topic.icon;
               const isExpanded = expandedTopicId === topic.id || !!searchQuery;
 
               return (
                 <article
                   key={topic.id}
-                  className={`bg-white dark:bg-slate-900 border rounded-3xl transition-all overflow-hidden ${
-                    isExpanded
-                      ? 'border-emerald-500/80 ring-2 ring-emerald-500/20 shadow-lg'
-                      : 'border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-800 shadow-sm'
+                  className={`bg-white border rounded-xl transition-all overflow-hidden ${
+                    isExpanded ? 'border-slate-300 shadow-sm' : 'border-slate-200 hover:border-slate-300 shadow-2xs'
                   }`}
                 >
-                  {/* Topic Header Card */}
+                  {/* Topic Item Header */}
                   <header
                     onClick={() => toggleAccordion(topic.id)}
-                    className="p-5 lg:p-6 cursor-pointer flex items-start justify-between gap-4 select-none hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
+                    className="p-4 cursor-pointer flex items-center justify-between gap-4 select-none hover:bg-slate-50/60 transition-colors"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                        <TopicIcon size={22} />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center justify-center shrink-0">
+                        <TopicIcon size={18} />
                       </div>
-                      <div className="space-y-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-extrabold tracking-wide uppercase">
+                      <div className="min-w-0 space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
                             {topic.roleName}
                           </span>
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[11px] font-semibold">
-                            {topic.category}
+                          <span className="text-[10px] font-medium text-slate-400">
+                            • {topic.category}
                           </span>
                         </div>
-                        <h3 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        <h3 className="text-sm font-semibold text-slate-900 truncate">
                           {topic.title}
                         </h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                          {topic.summary}
-                        </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0 pt-1 print:hidden">
-                      <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hidden sm:inline-block">
-                        {isExpanded ? 'Tutup Detail' : 'Lihat Langkah'}
+                    <div className="flex items-center gap-2 shrink-0 print:hidden">
+                      <span className="text-xs text-slate-500 font-medium hidden sm:inline-block">
+                        {isExpanded ? 'Tutup' : 'Lihat Detail'}
                       </span>
-                      <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center">
-                        {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                      </div>
+                      {isExpanded ? <ChevronDown size={16} className="text-slate-400" /> : <ChevronRight size={16} className="text-slate-400" />}
                     </div>
                   </header>
 
-                  {/* Topic Expanded Details */}
+                  {/* Expanded Content */}
                   {isExpanded && (
-                    <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 p-5 lg:p-6 space-y-6">
-                      {/* Prerequisites Box */}
-                      <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-800/60 rounded-2xl p-4 flex items-start gap-3">
-                        <Info size={18} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                        <div className="space-y-0.5">
-                          <p className="text-xs font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider">
-                            Syarat & Permisi Hak Akses:
-                          </p>
-                          <p className="text-xs text-amber-800 dark:text-amber-400">
-                            {topic.prerequisites}
-                          </p>
+                    <div className="border-t border-slate-100 bg-[#FAFAFB] p-4 space-y-4 text-xs">
+                      <p className="text-slate-600 leading-relaxed font-medium">
+                        {topic.summary}
+                      </p>
+
+                      {/* Prerequisites */}
+                      <div className="bg-amber-50/80 border border-amber-200/60 rounded-lg p-3 flex items-start gap-2.5">
+                        <Info size={15} className="text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                          <span className="font-semibold text-amber-900 block text-[11px]">Syarat Akses:</span>
+                          <span className="text-amber-800">{topic.prerequisites}</span>
                         </div>
                       </div>
 
-                      {/* Step-by-Step Instructions */}
-                      <div className="space-y-3">
-                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-2">
-                          <CheckCircle2 size={16} className="text-emerald-600" /> Prosedur Langkah demi Langkah:
-                        </h4>
-                        <ol className="space-y-2.5">
+                      {/* Step by Step */}
+                      <div className="space-y-2">
+                        <span className="font-semibold text-slate-800 uppercase tracking-wider text-[11px] block">
+                          Langkah demi Langkah:
+                        </span>
+                        <ol className="space-y-1.5">
                           {topic.steps.map((step, idx) => (
                             <li
                               key={idx}
-                              className="flex items-start gap-3 bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60 p-3.5 rounded-2xl text-xs font-medium text-slate-800 dark:text-slate-200"
+                              className="flex items-start gap-2.5 bg-white border border-slate-200 p-2.5 rounded-lg text-slate-700 font-medium shadow-2xs"
                             >
-                              <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                              <span className="w-4 h-4 rounded-full bg-slate-900 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                                 {idx + 1}
                               </span>
-                              <span className="pt-0.5 leading-relaxed">{step}</span>
+                              <span className="leading-normal">{step}</span>
                             </li>
                           ))}
                         </ol>
                       </div>
 
-                      {/* Pro-Tips Banner */}
-                      <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/60 rounded-2xl p-4 flex items-start gap-3">
-                        <Sparkles size={18} className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                        <div className="space-y-0.5">
-                          <p className="text-xs font-bold text-emerald-900 dark:text-emerald-300 uppercase tracking-wider">
-                            Pro-Tip & Praktik Terbaik Operasional:
-                          </p>
-                          <p className="text-xs text-emerald-800 dark:text-emerald-400 leading-relaxed">
-                            {topic.tips}
-                          </p>
+                      {/* Tips */}
+                      <div className="bg-emerald-50/80 border border-emerald-200/60 rounded-lg p-3 flex items-start gap-2.5">
+                        <Sparkles size={15} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <div>
+                          <span className="font-semibold text-emerald-900 block text-[11px]">Pro-Tip:</span>
+                          <span className="text-emerald-800">{topic.tips}</span>
                         </div>
                       </div>
 
-                      {/* Quick Shortcut Link to Feature */}
+                      {/* Shortcut Link */}
                       {topic.targetRoute && (
-                        <div className="pt-2 flex items-center justify-between border-t border-slate-200/60 dark:border-slate-800 print:hidden">
-                          <span className="text-xs text-slate-500 font-medium">
-                            Siap mengeksekusi fitur ini di aplikasi?
-                          </span>
+                        <div className="pt-2 flex items-center justify-end print:hidden border-t border-slate-200/60">
                           <Link
                             href={topic.targetRoute}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-bold transition-all shadow-sm"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#E8304A] hover:text-[#FF4D6A] transition-colors"
                           >
-                            Buka Modul Fitur <ExternalLink size={14} />
+                            Buka Halaman Modul <ArrowRight size={13} />
                           </Link>
                         </div>
                       )}
@@ -904,17 +857,13 @@ export default function PublicManualGuidePage() {
         )}
       </main>
 
-      {/* Footer Standard */}
-      <footer className="mt-12 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 px-4 lg:px-8 text-center text-xs text-slate-500 print:hidden">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p>© {new Date().getFullYear()} PT Bertumbuh Creative Agency ERP. All rights reserved.</p>
-          <div className="flex items-center gap-4 text-slate-400">
-            <span>Standard Operating Procedure v1.0</span>
-            <span>•</span>
-            <button onClick={handlePrint} className="hover:text-slate-600 transition-colors">
-              Cetak Dokumen Manual
-            </button>
-          </div>
+      {/* Minimal Footer */}
+      <footer className="mt-8 bg-white border-t border-slate-200 py-4 px-6 text-center text-xs text-slate-500 print:hidden">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <p>© {new Date().getFullYear()} PT Bertumbuh Creative Agency ERP</p>
+          <button onClick={handlePrint} className="hover:text-slate-800 transition-colors">
+            Cetak Manual PDF
+          </button>
         </div>
       </footer>
     </div>
