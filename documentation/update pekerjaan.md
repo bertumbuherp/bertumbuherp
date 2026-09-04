@@ -5,6 +5,12 @@ Dokumen ini mencatat secara sistematis seluruh perubahan file, penambahan fitur,
 
 ## 📅 Tanggal: 04 September 2026
 
+### 2. Perbaikan Next.js Production Build (Suspense Boundary Vercel Deployment)
+
+#### 📄 [MODIFY] `src/app/(dashboard)/super_admin/page.tsx`
+- **Tujuan**: Membungkus komponen `SuperAdminPageContent` yang menggunakan `useSearchParams()` dengan `<Suspense>` boundary.
+- **Detail Perubahan**: Mencegah error Next.js static prerendering export saat build di Vercel (`useSearchParams() should be wrapped in a suspense boundary`). Memastikan proses `npm run build` dan deployment Vercel berjalan 100% sukses tanpa error.
+
 ### 1. Pembersihan Mock Data & Persiapan Operations Real 100%
 
 #### 📄 [NEW] `src/lib/services/supabaseDataService.ts`
