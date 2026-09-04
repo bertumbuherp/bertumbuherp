@@ -5,6 +5,20 @@ Dokumen ini mencatat secara sistematis seluruh perubahan file, penambahan fitur,
 
 ## 📅 Tanggal: 04 September 2026
 
+### 5. Pembuatan Standalone Public User Manual Guide (`/manualguide`) per Role & Fungsi
+
+#### 📄 [NEW] `src/app/manualguide/page.tsx`
+- **Tujuan**: Menyediakan dokumen panduan pengguna (User Manual & SOP) interaktif per role dan per fungsi yang dapat diakses secara publik tanpa login terlebih dahulu (sekaligus dapat diakses oleh pengguna terautentikasi).
+- **Detail Perubahan**:
+  - **Header Navigasi & Branding**: Menyediakan logo Bertumbuh Agency ERP, tombol "Cetak / Save PDF", dan link "Masuk ke App ERP".
+  - **Banner & Pencarian Real-Time**: Menyediakan bilah pencarian interaktif untuk memfilter instruksi secara presisi berdasarkan kata kunci (misal: *reimbursement, cuti, jurnal, quotation, invoice, lembur, dll.*).
+  - **Filter Tab per 7 Role Utama**: Menyediakan filter `Semua Role`, `👑 Owner / CEO`, `🛡️ Super Admin`, `💰 Finance Manager`, `👥 HR Manager`, `📂 Project Manager (PM)`, `📈 Account Executive (AE)`, dan `💻 Team Member`.
+  - **Kartu Prosedur Interaktif (Accordion)**: Menampilkan rincian instruksi *Langkah demi Langkah*, *Syarat & Permisi Hak Akses*, *Pro-Tips Operasional*, serta *Tombol Pintas (Shortcut)* untuk membuka modul fitur langsung di aplikasi.
+
+#### 📄 [MODIFY] `src/components/layout/Sidebar.tsx`
+- **Tujuan**: Menambahkan opsi navigasi langsung "Panduan Pengguna" untuk seluruh role.
+- **Detail Perubahan**: Menambahkan `{ label: 'Panduan Pengguna', href: '/manualguide', icon: BookOpen }` ke dalam menu sidebar seluruh role pengguna.
+
 ### 4. Redesign UI Tab Navigasi Accounting & Buku Besar (Bertumbuh Branding & Pill Modern)
 
 #### 📄 [MODIFY] `src/app/(dashboard)/finance/accounting/page.tsx`

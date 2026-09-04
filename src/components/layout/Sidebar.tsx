@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import {
   LayoutDashboard, TrendingUp, Users, FolderKanban,
   UserCheck, Settings, ChevronRight, LogOut, Layers, CalendarDays,
-  FileText, Clock, Send, CreditCard, Receipt, Building, FileSpreadsheet, DollarSign, Calculator, UserMinus, ShieldCheck, Activity, Server, LucideIcon
+  FileText, Clock, Send, CreditCard, Receipt, Building, FileSpreadsheet, DollarSign, Calculator, UserMinus, ShieldCheck, Activity, Server, BookOpen, LucideIcon
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLE_LABELS_MAP } from '@/lib/permissions';
@@ -145,6 +145,9 @@ export default function Sidebar() {
       { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     ];
   }
+
+  // Always attach Manual Guide for all roles
+  navItems.push({ label: 'Panduan Pengguna', href: '/manualguide', icon: BookOpen });
 
   const roleLabel = primaryRole ? (ROLE_LABELS_MAP[primaryRole] ?? primaryRole) : '';
 
