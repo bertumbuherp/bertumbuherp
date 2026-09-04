@@ -5,6 +5,17 @@ Dokumen ini mencatat secara sistematis seluruh perubahan file, penambahan fitur,
 
 ## 📅 Tanggal: 04 September 2026
 
+### 4. Redesign UI Tab Navigasi Accounting & Buku Besar (Bertumbuh Branding & Pill Modern)
+
+#### 📄 [MODIFY] `src/app/(dashboard)/finance/accounting/page.tsx`
+- **Tujuan**: Meredesain total tampilan navigasi tab `Accounting & Buku Besar` agar rapi, modern, tidak bertumpuk/terpotong, dan konsisten 100% dengan branding PT Bertumbuh Creative Agency.
+- **Detail Perubahan**:
+  - Mengubah container tab dari baris blok rektangular kaku `rounded-t-lg bg-gray-200` menjadi **Glassmorphic Floating Pill Container** (`bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-gray-200/80 shadow-sm`).
+  - Menambahkan `whitespace-nowrap` pada seluruh item tab sehingga label nama tab (misal: "Chart of Accounts (COA)", "Penyesuaian & Closing Period") tidak pernah terlipat kaku secara vertikal 2-3 baris.
+  - Mengintegrasikan ikon Lucide-react yang presisi pada masing-masing dari 11 tab (`FilePlus`, `FolderTree`, `BookOpen`, `TrendingUp`, `ArrowLeftRight`, `BarChart3`, `Award`, `Scale`, `PieChart`, `Landmark`, `Wallet`).
+  - Menerapkan status tab aktif dengan **Emerald-Teal Brand Gradient** (`from-emerald-600 to-teal-600 text-white shadow-md rounded-xl`) khas PT Bertumbuh Creative Agency.
+  - Mempercantik wrapper kontainer utama section menjadi `rounded-2xl shadow-sm border border-gray-100 p-6 min-h-[65vh]`.
+
 ### 3. Pembersihan 100% Mock Data untuk Operasional Nyata (Clean Operational Reset)
 
 #### 📄 [MODIFY] `src/lib/store/*` (`hrStore.ts`, `financeStore.ts`, `crmStore.ts`, `pmStore.ts`, `calendarStore.ts`, `activityLogStore.ts`, `systemStatusStore.ts`)

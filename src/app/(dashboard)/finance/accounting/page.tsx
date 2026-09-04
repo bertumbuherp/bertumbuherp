@@ -4,6 +4,19 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Link from 'next/link';
+import { 
+  FilePlus, 
+  FolderTree, 
+  BookOpen, 
+  TrendingUp, 
+  ArrowLeftRight, 
+  BarChart3, 
+  Award, 
+  Scale, 
+  PieChart, 
+  Landmark, 
+  Wallet 
+} from 'lucide-react';
 import TransactionInput from '@/components/finance/TransactionInput';
 import TrialBalance from '@/components/finance/TrialBalance';
 import ProfitLossReport from '@/components/finance/ProfitLossReport';
@@ -18,17 +31,17 @@ import { CashFlowStatementView } from '@/components/finance/CashFlowStatementVie
 import { MultiPeriodReportView } from '@/components/finance/MultiPeriodReportView';
 
 const tabs = [
-  { key: 'input', label: 'Input Jurnal & Simulasi' },
-  { key: 'coa', label: 'Master COA' },
-  { key: 'buku_besar', label: 'Buku Besar per Akun' },
-  { key: 'client_revenue', label: 'Revenue Klien' },
-  { key: 'cash_flow', label: 'Arus Kas (3 Aktivitas)' },
-  { key: 'multi_period', label: 'Reporting Multi-Periode' },
-  { key: 'bod_report', label: 'Laporan BOD' },
-  { key: 'neraca_saldo', label: 'Neraca Saldo' },
-  { key: 'laba_rugi', label: 'Laporan L/R' },
-  { key: 'posisi_keuangan', label: 'Neraca' },
-  { key: 'modal', label: 'Perubahan Modal' },
+  { key: 'input', label: 'Input Jurnal & Simulasi', icon: FilePlus },
+  { key: 'coa', label: 'Master COA', icon: FolderTree },
+  { key: 'buku_besar', label: 'Buku Besar per Akun', icon: BookOpen },
+  { key: 'client_revenue', label: 'Revenue Klien', icon: TrendingUp },
+  { key: 'cash_flow', label: 'Arus Kas (3 Aktivitas)', icon: ArrowLeftRight },
+  { key: 'multi_period', label: 'Reporting Multi-Periode', icon: BarChart3 },
+  { key: 'bod_report', label: 'Laporan BOD', icon: Award },
+  { key: 'neraca_saldo', label: 'Neraca Saldo', icon: Scale },
+  { key: 'laba_rugi', label: 'Laporan L/R', icon: PieChart },
+  { key: 'posisi_keuangan', label: 'Neraca (Posisi Keuangan)', icon: Landmark },
+  { key: 'modal', label: 'Perubahan Modal', icon: Wallet },
 ];
 
 function FinanceAccountingContent() {
@@ -68,22 +81,30 @@ function FinanceAccountingContent() {
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header title="Accounting &amp; Buku Besar" subtitle="Finance" />
       <div className="max-w-7xl mx-auto w-full p-6 flex-1">
-        <nav className="flex space-x-4 mb-6 overflow-x-auto" aria-label="Accounting tabs">
-          {tabs.map((tab) => (
-            <Link
-              key={tab.key}
-              href={`/finance/accounting?tab=${tab.key}`}
-              className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${
-                activeTab === tab.key
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {tab.label}
-            </Link>
-          ))}
+        <nav 
+          className="bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-gray-200/80 shadow-sm mb-6 flex items-center gap-1.5 overflow-x-auto"
+          aria-label="Accounting tabs"
+        >
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.key;
+            return (
+              <Link
+                key={tab.key}
+                href={`/finance/accounting?tab=${tab.key}`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 shrink-0 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold shadow-md shadow-emerald-500/20 scale-[1.02]'
+                    : 'text-gray-600 hover:text-emerald-700 hover:bg-emerald-50/60 border border-transparent'
+                }`}
+              >
+                <Icon size={14} className={isActive ? 'text-white' : 'text-gray-400'} />
+                <span>{tab.label}</span>
+              </Link>
+            );
+          })}
         </nav>
-        <section className="bg-white rounded-lg shadow p-6 min-h-[60vh]">
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 min-h-[65vh] fade-in">
           {renderTabContent()}
         </section>
       </div>
