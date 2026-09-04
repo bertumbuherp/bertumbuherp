@@ -1,13 +1,14 @@
 'use client';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import UserManagementView from '@/components/admin/UserManagementView';
 import ActivityLogView from '@/components/admin/ActivityLogView';
 import SystemStatusView from '@/components/admin/SystemStatusView';
 import Header from '@/components/layout/Header';
 import Link from 'next/link';
-import { Users, Activity, Activity as PulseIcon, Server } from 'lucide-react';
+import { Users, Activity, Server } from 'lucide-react';
 
-export default function SuperAdminPage() {
+function SuperAdminPageContent() {
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('tab') || 'users';
 
@@ -63,5 +64,13 @@ export default function SuperAdminPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SuperAdminPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-gray-500">Memuat panel Super Admin...</div>}>
+      <SuperAdminPageContent />
+    </Suspense>
   );
 }
