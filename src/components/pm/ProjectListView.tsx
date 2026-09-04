@@ -12,8 +12,12 @@ export function ProjectListView() {
   const { session } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
 
-  let myProjects = projects.filter(p => p.pmId === session?.userId || p.pmName === session?.name);
-  if (myProjects.length === 0) myProjects = projects; // Mock fallback
+  const isAdmin = session?.roles?.some(r => ['owner', 'super_admin', 'pm'].includes(r));
+  const myProjects = isAdmin
+    ? projects
+    : projects.filter(p => p.pmId === session?.userId || p.pmName === session?.name);
+
+
 
   const filtered = myProjects.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 

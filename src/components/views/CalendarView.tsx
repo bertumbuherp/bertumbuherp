@@ -8,8 +8,9 @@ import { useCrmStore } from '@/lib/store/crmStore';
 import { useHRStore } from '@/lib/store/hrStore';
 import { useFinanceStore } from '@/lib/store/financeStore';
 import { useCalendarStore, CustomEvent } from '@/lib/store/calendarStore';
-import { employees } from '@/lib/mock-data';
+import { useUserStore } from '@/lib/store/userStore';
 import { 
+
   Calendar as CalendarIcon, ChevronLeft, ChevronRight, Filter, 
   Clock, User, DollarSign, Briefcase, FileText, CheckCircle, Info, X,
   Plus, Trash2, Edit, Send
@@ -75,6 +76,8 @@ export function CalendarView({ role }: { role: string }) {
   const { leaves } = useHRStore();
   const { invoices } = useFinanceStore();
   const { customEvents, addCustomEvent, updateCustomEvent, deleteCustomEvent } = useCalendarStore();
+  const { users: employees } = useUserStore();
+
 
   // Filters Panel
   const [filters, setFilters] = useState({

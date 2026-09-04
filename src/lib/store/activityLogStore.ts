@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Role } from '@/lib/types';
+import { supabaseDataService } from '@/lib/services/supabaseDataService';
 
 export type SystemModule = 'AUTH' | 'USER_MGMT' | 'CRM' | 'PM' | 'FINANCE' | 'HR' | 'SYSTEM';
 
@@ -18,6 +19,8 @@ export interface ActivityLog {
 
 interface ActivityLogStoreState {
   logs: ActivityLog[];
+  fetchFromSupabase: () => Promise<void>;
+  clearMockData: () => void;
   addLog: (log: Omit<ActivityLog, 'id' | 'timestamp'>) => void;
   clearLogs: () => void;
 }
@@ -27,57 +30,13 @@ const initialLogs: ActivityLog[] = [
     id: 'log-101',
     timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
     userId: 'u1',
-    userName: 'Reza Pratama',
+    userName: 'Owner / Direktur Utama',
     userRole: 'owner',
     module: 'AUTH',
     action: 'LOGIN',
     details: 'Pengguna berhasil masuk ke Portal Internal Bertumbuh ERP.',
     ipAddress: '192.168.1.10'
   },
-  {
-    id: 'log-102',
-    timestamp: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
-    userId: 'u3',
-    userName: 'Andi Firmansyah',
-    userRole: 'ae',
-    module: 'CRM',
-    action: 'CONVERT_QUOTATION',
-    details: 'Mengonversi Quotation QTO-2026-06-001 ke Deal & Auto-Onboard Proyek PM.',
-    ipAddress: '192.168.1.15'
-  },
-  {
-    id: 'log-103',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    userId: 'u4',
-    userName: 'Dewi Lestari',
-    userRole: 'pm',
-    module: 'PM',
-    action: 'APPROVE_LEAVE',
-    details: 'Menyetujui pengajuan cuti tahap 1 untuk Dimas Prasetyo.',
-    ipAddress: '192.168.1.22'
-  },
-  {
-    id: 'log-104',
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-    userId: 'u5',
-    userName: 'Hadi Nugroho',
-    userRole: 'finance',
-    module: 'FINANCE',
-    action: 'PAID_INVOICE',
-    details: 'Memverifikasi pelunasan Invoice INV-2026-05-001 (PT Maju Bersama) & menerbitkan Jurnal Umum.',
-    ipAddress: '192.168.1.18'
-  },
-  {
-    id: 'log-105',
-    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-    userId: 'u9',
-    userName: 'Siti Aminah',
-    userRole: 'hr',
-    module: 'HR',
-    action: 'APPROVE_OVERTIME',
-    details: 'Menyetujui pengajuan lembur Dimas Prasetyo (3 Jam - Revisi Desain).',
-    ipAddress: '192.168.1.25'
-  }
 ];
 
 export const useActivityLogStore = create<ActivityLogStoreState>()(
@@ -85,15 +44,44 @@ export const useActivityLogStore = create<ActivityLogStoreState>()(
     (set) => ({
       logs: initialLogs,
 
-      addLog: (logData) =>
-        set((state) => {
-          const newLog: ActivityLog = {
-            ...logData,
-            id: `log-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-            timestamp: new Date().toISOString(),
-          };
-          return { logs: [newLog, ...state.logs] };
-        }),
+      fetchFromSupabase: async () => {
+        const dbLogs = await supabaseDataService.getActivityLogs();
+        if (dbLogs && dbLogs.length > 0) {
+          const mappedLogs: ActivityLog[] = dbLogs.map((l: any) => ({
+            id: l.id,
+            timestamp: l.timestamp,
+            userId: l.user_id,
+            userName: l.user_name,
+            userRole: l.user_role,
+            module: l.module,
+            action: l.action,
+            details: l.details,
+            ipAddress: l.ip_address,
+          }));
+          set({ logs: mappedLogs });
+        }
+      },
+
+      clearMockData: () => set({ logs: [] }),
+
+      addLog: (logData) => {
+        const newLog: ActivityLog = {
+          ...logData,
+          id: `log-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          timestamp: new Date().toISOString(),
+        };
+        set((state) => ({ logs: [newLog, ...state.logs] }));
+
+        supabaseDataService.addActivityLog({
+          user_id: newLog.userId,
+          user_name: newLog.userName,
+          user_role: newLog.userRole,
+          module: newLog.module,
+          action: newLog.action,
+          details: newLog.details,
+          ip_address: newLog.ipAddress || '127.0.0.1',
+        });
+      },
 
       clearLogs: () => set({ logs: [] }),
     }),
@@ -102,3 +90,4 @@ export const useActivityLogStore = create<ActivityLogStoreState>()(
     }
   )
 );
+

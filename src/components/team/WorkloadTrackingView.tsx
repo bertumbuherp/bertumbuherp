@@ -1,8 +1,7 @@
-'use client';
 import React, { useState, useMemo } from 'react';
 import { usePMStore } from '@/lib/store/pmStore';
+import { useUserStore } from '@/lib/store/userStore';
 import { formatCurrency } from '@/lib/utils';
-import { teamWorkload } from '@/backend/repositories/mockRepository';
 import { AlertTriangle, CheckCircle, User, Clock, TrendingUp, ChevronDown, ChevronUp, BarChart2, Shield, Zap } from 'lucide-react';
 
 const CAPACITY_THRESHOLD = 40; // jam/minggu
@@ -12,9 +11,34 @@ type FilterMode = 'all' | 'overload' | 'warning' | 'ok';
 
 export function WorkloadTrackingView() {
   const { tasks, projects } = usePMStore();
+  const { users: employees } = useUserStore();
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [expandedMember, setExpandedMember] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'card' | 'bar'>('card');
+
+  const teamWorkload = useMemo(() => {
+    return employees.map(emp => {
+      const memberTasks = tasks.filter(t => t.assigneeId === emp.id || t.assigneeName === emp.name);
+      const hoursLogged = memberTasks.reduce((s, t) => s + (t.loggedHours || 0), 0);
+      const hoursAllocated = memberTasks.reduce((s, t) => s + (t.estimatedHours || 0), 0);
+      const memberProjects = [...new Set(memberTasks.map(t => t.projectId))];
+      return {
+        employeeId: emp.id,
+        name: emp.name,
+        position: emp.position || 'Staff',
+        subTeam: emp.department || 'Brand',
+        hoursLogged: hoursLogged,
+        capacityHours: 40,
+        utilizationPercent: Math.min(100, Math.round((hoursAllocated / 40) * 100)),
+        activeTasksCount: memberTasks.filter(t => t.status !== 'done').length,
+        currentFocus: memberTasks.find(t => t.status === 'in_progress')?.title || 'Fokus proyek rutin',
+        avatarColor: 'var(--red)',
+        activeProjects: memberProjects.length,
+      };
+    });
+  }, [employees, tasks]);
+
+
 
   // Merge teamWorkload with live task data
   const enrichedWorkload = useMemo(() => {

@@ -1,5 +1,6 @@
 import { employees } from '../repositories/mockRepository';
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
+import { useUserStore } from '@/lib/store/userStore';
 
 const MOCK_CREDENTIALS: Record<string, { password: string; userId: string }> = {
   'owner@bertumbuh.id':   { password: 'demo123', userId: 'u1' },
@@ -58,17 +59,25 @@ export class AuthService {
     // Fallback to internal accounts verification
     await new Promise((r) => setTimeout(r, 600));
 
-    const cred = MOCK_CREDENTIALS[email.toLowerCase()];
-    if (!cred) {
+    const normalizedEmail = email.toLowerCase();
+    const storeUsers = useUserStore.getState().users || [];
+    let employee = storeUsers.find((u) => u.email.toLowerCase() === normalizedEmail);
+
+    const cred = MOCK_CREDENTIALS[normalizedEmail];
+
+    if (!employee && cred) {
+      employee = storeUsers.find((u) => u.id === cred.userId) || (employees as any).find((e: any) => e.id === cred.userId);
+    }
+
+    if (!employee) {
       return { success: false, error: 'Email tidak ditemukan.' };
     }
 
-    if (password && cred.password && password !== cred.password) {
+    if (cred && password && cred.password && password !== cred.password) {
       return { success: false, error: 'Kata sandi tidak sesuai.' };
     }
 
-    const employee = employees.find((e: any) => e.id === cred.userId);
-    if (!employee || !employee.isActive) {
+    if (!employee.isActive) {
       return { success: false, error: 'Akun tidak aktif.' };
     }
 

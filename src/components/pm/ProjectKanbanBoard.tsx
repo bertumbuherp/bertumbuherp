@@ -2,14 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { usePMStore } from '@/lib/store/pmStore';
+import { useUserStore } from '@/lib/store/userStore';
 import { Project, Task, TaskStatus, SubTeam } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
-import { employees } from '@/backend/repositories/mockRepository';
 import { Clock, MessageSquare, Plus, CheckCircle, ExternalLink, UserCircle2, X } from 'lucide-react';
 
 export function ProjectKanbanBoard({ projectId }: { projectId: string }) {
   const { projects, tasks, addTask, updateTaskStatus } = usePMStore();
+  const { users: employees } = useUserStore();
   const project = projects.find(p => p.id === projectId);
+
   
   // Create Task Modal States
   const [mounted, setMounted] = useState(false);

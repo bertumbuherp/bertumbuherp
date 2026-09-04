@@ -13,8 +13,13 @@ export function MemberTaskBoard({ projectId }: { projectId: string }) {
   
   if (!project) return <div className="p-6 text-center text-gray-500">Proyek tidak ditemukan.</div>;
 
-  // For a team member, they should only see their own tasks, or at least be able to manage their own tasks.
-  const myTasks = tasks.filter(t => t.projectId === projectId && (t.assigneeId === session?.userId || t.assigneeName === session?.name || t.assigneeName === 'Dimas Prasetyo')); // Defaulting to Dimas for mock if needed
+  const isPMOrAdmin = session?.roles?.some(r => ['owner', 'super_admin', 'pm'].includes(r));
+  const myTasks = tasks.filter(t => 
+    t.projectId === projectId && 
+    (isPMOrAdmin || t.assigneeId === session?.userId || t.assigneeName === session?.name)
+  );
+
+
 
   const columns: { id: TaskStatus, title: string, color: string, bg: string }[] = [
     { id: 'todo', title: 'To Do', color: 'text-gray-600', bg: 'bg-gray-100' },

@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { supabaseDataService } from '@/lib/services/supabaseDataService';
+
 
 export interface Reimbursement {
   id: string;
@@ -147,6 +149,9 @@ interface FinanceStoreState {
   invoices: Invoice[];
   coaList: AccountCOA[];
   
+  fetchFromSupabase: () => Promise<void>;
+  clearMockData: () => void;
+  
   addReimbursement: (reimbursement: Reimbursement) => void;
   updateReimbursementStatus: (id: string, status: Reimbursement['status']) => void;
   
@@ -169,8 +174,10 @@ interface FinanceStoreState {
 }
 
 const initialReimbursements: Reimbursement[] = [
-  { id: 'rem1', userName: 'Dimas Prasetyo', title: 'Tiket Kereta JKT-BDG', amount: 350000, date: '2026-06-05', notes: 'Perjalanan dinas meeting klien', status: 'pending', attachmentUrl: 'https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80' },
-  { id: 'rem2', userName: 'Sarah Wijaya', title: 'Konsumsi Rapat Klien A', amount: 150000, date: '2026-05-15', notes: 'Makan siang pitching', status: 'paid', attachmentUrl: 'https://images.unsplash.com/photo-1556742049-0a670fc4a619?auto=format&fit=crop&w=600&q=80' },
+  { id: 'rem-1', userName: 'Risa Amalia', title: 'Kopi & Snack Meeting Client Raja Usus', amount: 185000, date: '2026-06-10', notes: 'Meeting kick-off campaign sosmed', status: 'approved' },
+  { id: 'rem-2', userName: 'Dimas Prasetyo', title: 'Pembelian Asset Design Stock', amount: 350000, date: '2026-06-12', notes: 'Asset 3D & Vector untuk Rebranding Kopi Nusantara', status: 'pending' },
+  { id: 'rem-3', userName: 'Bagas Eko', title: 'Bensin & Tol Visit Office Client Sambal Bakar', amount: 120000, date: '2026-06-14', notes: 'Audit performance ads & setup tracking', status: 'paid' },
+  { id: 'rem-4', userName: 'Dewi PM', title: 'Langganan Software Project Management (Zoom)', amount: 450000, date: '2026-06-15', notes: 'Zoom Pro 1 bulan untuk meeting client', status: 'approved' },
 ];
 
 const initialJournal: JournalEntry[] = [
@@ -243,6 +250,49 @@ export const useFinanceStore = create<FinanceStoreState>()(
       payrolls: initialPayrolls,
       vendors: [],
       coaList: CHART_OF_ACCOUNTS,
+
+      fetchFromSupabase: async () => {
+        const [dbJournal, dbReimbursements] = await Promise.all([
+          supabaseDataService.getJournalEntries(),
+          supabaseDataService.getReimbursements(),
+        ]);
+
+        if (dbJournal && dbJournal.length > 0) {
+          const mappedJournal: JournalEntry[] = dbJournal.map((j: any) => ({
+            id: j.id,
+            date: j.date,
+            description: j.description,
+            account: j.account,
+            accountCode: j.account_code,
+            accountName: j.account_name,
+            type: j.type,
+            amount: Number(j.amount) || 0,
+            referenceId: j.reference_id,
+            isVoided: j.is_voided,
+            isSimulation: j.is_simulation,
+          }));
+          set({ journal: mappedJournal });
+        }
+
+        if (dbReimbursements && dbReimbursements.length > 0) {
+          const mappedRem: Reimbursement[] = dbReimbursements.map((r: any) => ({
+            id: r.id,
+            userName: r.user_name,
+            title: r.title,
+            amount: Number(r.amount) || 0,
+            date: r.date,
+            notes: r.notes || '',
+            status: r.status || 'pending',
+            attachmentUrl: r.attachment_url,
+          }));
+          set({ reimbursements: mappedRem });
+        }
+      },
+
+      clearMockData: () => {
+        set({ reimbursements: [], journal: [], payrolls: [], invoices: [] });
+      },
+
       invoices: [
         { 
           id: 'inv1', 

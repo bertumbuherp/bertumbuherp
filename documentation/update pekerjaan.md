@@ -3,7 +3,49 @@
 
 Dokumen ini mencatat secara sistematis seluruh perubahan file, penambahan fitur, refactoring, dan perbaikan bug dalam proyek **Bertumbuh Agency ERP**. Setiap aktivitas pembaruan kode akan selalu dicatat di sini.
 
+## 📅 Tanggal: 04 September 2026
+
+### 1. Pembersihan Mock Data & Persiapan Operations Real 100%
+
+#### 📄 [NEW] `src/lib/services/supabaseDataService.ts`
+- **Tujuan**: Service terpusat operasi CRUD database Supabase PostgreSQL Cloud.
+- **Detail Perubahan**: Menyediakan method async untuk sinkronisasi live data ke 27 tabel PostgreSQL Supabase (`profiles`, `clients`, `deals`, `service_packages`, `quotations`, `projects`, `tasks`, `journal_entries`, `reimbursements`, `employee_leaves`, `employee_overtimes`, `employee_attendances`, `activity_logs`).
+
+#### 📄 [MODIFY] Refactoring 8 Zustand Stores (`src/lib/store/*`)
+- **Tujuan**: Menghubungkan state lokal ke Supabase Cloud dan menyediakan opsi *Clean Operational Reset*.
+- **Detail Perubahan**:
+  - `userStore.ts`: Menambahkan `fetchFromSupabase()`, `clearMockData()`, dan sinkronisasi `upsertEmployee()` ke Supabase.
+  - `pmStore.ts`: Menambahkan `fetchFromSupabase()`, `clearMockData()`, dan sinkronisasi `upsertProject()`, `upsertTask()`, `deleteTask()` ke Supabase.
+  - `crmStore.ts`: Menambahkan `fetchFromSupabase()`, `clearMockData()`, dan sinkronisasi `upsertClient()`, `upsertDeal()`, `upsertPackage()`, `upsertQuotation()`.
+  - `financeStore.ts`: Menambahkan `fetchFromSupabase()`, `clearMockData()`, dan sinkronisasi `upsertJournalEntry()`, `upsertReimbursement()`.
+  - `hrStore.ts`: Menambahkan `fetchFromSupabase()`, `clearMockData()`, dan sinkronisasi `upsertLeave()`, `upsertOvertime()`, `upsertAttendance()`.
+  - `calendarStore.ts`: Menambahkan `clearMockData()`.
+  - `activityLogStore.ts`: Menambahkan `fetchFromSupabase()`, `clearMockData()`, dan sinkronisasi `addActivityLog()`.
+
+#### 📄 [MODIFY] Refactoring Komponen UI (Menghapus Import Direct Mock Data)
+- **Tujuan**: Mengubah tampilan komponen UI agar 100% dinamik dari store dan session user login.
+- **Detail Perubahan**:
+  - `src/components/views/ProjectDetailsView.tsx`: Membaca `employees` & `clients` secara dinamis dari `useUserStore()` dan `useCrmStore()`.
+  - `src/components/views/CalendarView.tsx`: Membaca `employees` secara dinamis dari `useUserStore()`.
+  - `src/components/pm/PMOverview.tsx`: Menggunakan `usePMStore()` dan `useUserStore()` untuk menghitung metrik & proyek delay secara dinamis.
+  - `src/components/pm/PMTodoList.tsx`: Menggunakan `usePMStore()`.
+  - `src/components/pm/PMTeam.tsx`: Menghitung *team workload* dan jam kerja secara dinamis dari perolehan tugas pengguna.
+  - `src/components/pm/PMClientReport.tsx`: Menghasilkan laporan progress klien secara dinamis berdasarkan data proyek aktif.
+  - `src/components/pm/ProjectKanbanBoard.tsx`: Membaca tim penanggung jawab dari `useUserStore()`.
+  - `src/components/team/WeeklyReportBuilderView.tsx`: Menghitung beban kerja dan laporan progress secara dinamis.
+  - `src/components/team/WorkloadTrackingView.tsx`: Menghitung alokasi jam kerja tim secara dinamis.
+  - `src/components/team/MemberTaskBoard.tsx`: Menghapus fallback hardcoded nama 'Dimas Prasetyo' dan menyaring tugas berdasarkan session aktif.
+  - `src/components/pm/GoogleCalendarSyncWidget.tsx` & `src/lib/services/GoogleCalendarSync.ts`: Menggunakan email user login `session.email` secara dinamis.
+  - `src/components/pm/ProjectListView.tsx` & `src/components/crm/CRMDashboard.tsx`: Menghapus fallback paksa ke array mock saat proyek/deals berukuran 0.
+
+#### 📄 [MODIFY] `src/components/admin/SystemStatusView.tsx`
+- **Tujuan**: Menambahkan panel *Manajemen Operations Real & Database State* di dashboard Super Admin.
+- **Detail Perubahan**: Menyediakan tombol **"Sinkronkan Supabase Cloud"** dan **"Bersihkan Mock Data & Operational Clean State"** beserta notifikasi status live.
+
+---
+
 ## 📅 Tanggal: 03 September 2026
+
 
 ### 1. Penyesuaian Aplikasi untuk Penggunaan Real (Internal ERP PT Bertumbuh)
 

@@ -1,6 +1,7 @@
 'use client';
 import { useMemo } from 'react';
-import { projects, tasks, teamWorkload, atRiskAlerts } from '@/lib/mock-data';
+import { usePMStore } from '@/lib/store/pmStore';
+import { useUserStore } from '@/lib/store/userStore';
 import { formatCurrency, STATUS_LABELS, formatDate } from '@/lib/utils';
 import { FolderKanban, CheckSquare, Users, AlertTriangle, AlertCircle, TrendingUp, Clock } from 'lucide-react';
 
@@ -17,12 +18,44 @@ import PackageTierBadge from './PackageTierBadge';
 
 export default function PMOverview() {
   const now = useMemo(() => Date.now(), []);
+  const { projects, tasks } = usePMStore();
+  const { users: employees } = useUserStore();
+
   const allTasks = tasks;
   const overdueTasks = allTasks.filter(t => t.status !== 'done' && new Date(t.dueDate) < new Date());
   const inProgressTasks = allTasks.filter(t => t.status === 'in_progress');
   const delayedProjects = projects.filter(p => p.status === 'delayed' || p.status === 'at_risk');
   const totalBudget = projects.reduce((s, p) => s + p.budget, 0);
   const totalSpent = projects.reduce((s, p) => s + p.actualCost, 0);
+  const budgetRatio = totalBudget > 0 ? ((totalSpent / totalBudget) * 100).toFixed(0) : '0';
+
+  const atRiskAlerts = useMemo(() => {
+    const alerts: { id: string; message: string; severity: 'high' | 'medium' | 'low' }[] = [];
+    delayedProjects.forEach(p => {
+      alerts.push({
+        id: `p-${p.id}`,
+        message: `Proyek ${p.name} (${p.clientName}) berstatus ${STATUS_LABELS[p.status] || p.status}. Perlu tindak lanjut PM.`,
+        severity: p.status === 'delayed' ? 'high' : 'medium',
+      });
+    });
+    overdueTasks.forEach(t => {
+      alerts.push({
+        id: `t-${t.id}`,
+        message: `Tugas "${t.title}" oleh ${t.assigneeName} melebihi deadline (${t.dueDate}).`,
+        severity: 'medium',
+      });
+    });
+    if (alerts.length === 0) {
+      alerts.push({
+        id: 'clean',
+        message: 'Seluruh proyek dan tugas berjalan lancar tanpa kendala kritis.',
+        severity: 'low',
+      });
+    }
+    return alerts;
+  }, [delayedProjects, overdueTasks]);
+
+
 
   return (
     <div className="space-y-5 fade-in">
@@ -31,8 +64,9 @@ export default function PMOverview() {
         {[
           { label: 'Proyek Aktif', value: String(projects.length), sub: `${delayedProjects.length} butuh perhatian`, icon: FolderKanban, color: 'var(--red)', bg: 'var(--red-dim2)' },
           { label: 'Tugas In Progress', value: String(inProgressTasks.length), sub: `${overdueTasks.length} overdue`, icon: CheckSquare, color: 'var(--blue)', bg: 'var(--blue-dim)' },
-          { label: 'Anggota Tim', value: String(teamWorkload.length), sub: 'Dalam pengawasan PM', icon: Users, color: 'var(--violet)', bg: 'var(--violet-dim)' },
-          { label: 'Budget Terpakai', value: `${((totalSpent / totalBudget) * 100).toFixed(0)}%`, sub: `${formatCurrency(totalSpent)} / ${formatCurrency(totalBudget)}`, icon: TrendingUp, color: 'var(--green)', bg: 'var(--green-dim)' },
+          { label: 'Anggota Tim', value: String(employees.length), sub: 'Dalam pengawasan PM', icon: Users, color: 'var(--violet)', bg: 'var(--violet-dim)' },
+          { label: 'Budget Terpakai', value: `${budgetRatio}%`, sub: `${formatCurrency(totalSpent)} / ${formatCurrency(totalBudget)}`, icon: TrendingUp, color: 'var(--green)', bg: 'var(--green-dim)' },
+
         ].map(s => (
           <div key={s.label} className="card p-4">
             <div className="flex items-center gap-2 mb-3">

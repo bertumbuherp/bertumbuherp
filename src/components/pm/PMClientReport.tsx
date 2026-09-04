@@ -1,16 +1,51 @@
-'use client';
-import { clientReports } from '@/lib/mock-data';
 import { useState } from 'react';
+import { usePMStore } from '@/lib/store/pmStore';
+import { useCrmStore } from '@/lib/store/crmStore';
 import { CheckCircle, AlertTriangle, Clock, ChevronDown, ChevronUp, Send } from 'lucide-react';
 
 const STATUS_CONFIG = {
   on_track: { icon: CheckCircle, color: 'var(--green)', bg: 'var(--green-dim)', label: 'On Track' },
   at_risk:  { icon: AlertTriangle, color: 'var(--yellow)', bg: 'var(--yellow-dim)', label: 'At Risk' },
   delayed:  { icon: Clock, color: 'var(--red-err)', bg: 'var(--red-err-dim)', label: 'Terlambat' },
+  planning: { icon: Clock, color: 'var(--blue)', bg: 'var(--blue-dim)', label: 'Perencanaan' },
+  completed: { icon: CheckCircle, color: 'var(--violet)', bg: 'var(--violet-dim)', label: 'Selesai' },
 };
 
 export default function PMClientReport() {
-  const [expanded, setExpanded] = useState<string | null>('cr1');
+  const { projects, tasks } = usePMStore();
+  const { clients } = useCrmStore();
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  const clientReports = projects.map(p => {
+    const projTasks = tasks.filter(t => t.projectId === p.id);
+    const completedCount = projTasks.filter(t => t.status === 'done').length;
+    const progress = projTasks.length > 0 ? Math.round((completedCount / projTasks.length) * 100) : 0;
+    return {
+      id: p.id,
+      clientName: p.clientName,
+      projectName: p.name,
+      period: 'Bulan Ini',
+      status: (p.status as keyof typeof STATUS_CONFIG) || 'on_track',
+      overallProgress: progress,
+      progressPercent: progress,
+      completedDeliverables: projTasks.filter(t => t.status === 'done').map(t => t.title),
+      upcomingDeliverables: projTasks.filter(t => t.status !== 'done').map(t => t.title),
+      clientNote: `Progres proyek ${p.name} berjalan sesuai perencanaan (${progress}% selesai).`,
+      pmNote: `Catatan PM: Proyek berjalan aktif dengan partisipasi tim.`,
+      teamUpdates: projTasks.length > 0 
+        ? projTasks.map(t => ({
+            subTeam: t.subTeam || 'Divisi',
+            lead: t.assigneeName || 'Team Member',
+            update: `Tugas "${t.title}" saat ini berstatus: ${t.status}.`,
+          }))
+        : [{ subTeam: 'PM', lead: 'Project Manager', update: 'Proyek baru didaftarkan dan dalam tahap persiapan awal.' }],
+      nextMilestone: projTasks.find(t => t.status !== 'done')?.title || 'Penyelesaian Proyek',
+      lastUpdated: new Date().toISOString().split('T')[0],
+    };
+  });
+
+
+
 
   return (
     <div className="space-y-4 fade-in">

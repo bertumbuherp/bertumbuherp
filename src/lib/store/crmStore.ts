@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { Client, Deal, DealStage, ServicePackage, Quotation } from '@/lib/types';
 import { deals as initialDeals, clients as initialClients } from '@/lib/mock-data';
 import { usePMStore } from '@/lib/store/pmStore';
+import { supabaseDataService } from '@/lib/services/supabaseDataService';
 
 const initialPackages: ServicePackage[] = [
   { id: 'pkg-1', name: 'Brand Identity & Digital Launch', description: 'Paket lengkap pembuatan identitas brand dari nol beserta peluncuran digital.', basePrice: 85000000, deliverables: ['Logo Design', 'Brand Guideline', 'Social Media Setup'], color: 'var(--red)', status: 'approved', requestedBy: 'System' },
@@ -56,6 +57,8 @@ interface CrmStoreState {
   deals: Deal[];
   packages: ServicePackage[];
   quotations: Quotation[];
+  fetchFromSupabase: () => Promise<void>;
+  clearMockData: () => void;
   
   // Client Actions
   addClient: (client: Client) => void;
@@ -87,16 +90,112 @@ export const useCrmStore = create<CrmStoreState>()(
       clients: initialClients,
       deals: initialDeals.map(d => ({
         ...d,
-        // Make sure deals have createdAt or source if undefined
         source: d.source || 'Website',
       })),
       packages: initialPackages,
       quotations: initialQuotations,
 
-      addClient: (client) => set((state) => ({ clients: [client, ...state.clients] })),
+      fetchFromSupabase: async () => {
+        const [dbClients, dbDeals, dbPackages, dbQuotations] = await Promise.all([
+          supabaseDataService.getClients(),
+          supabaseDataService.getDeals(),
+          supabaseDataService.getPackages(),
+          supabaseDataService.getQuotations(),
+        ]);
+
+        if (dbClients && dbClients.length > 0) {
+          const mappedClients: Client[] = dbClients.map((c: any) => ({
+            id: c.id,
+            organizationId: c.organization_id || 'org_bertumbuh',
+            name: c.name,
+            industry: c.industry || 'Umum',
+            status: c.status || 'active',
+            contacts: c.contacts || [],
+            ownedByAe: c.owned_by_ae || 'ae@bertumbuh.id',
+            totalRevenue: Number(c.total_revenue) || 0,
+            activeProjects: c.active_projects || 0,
+            createdAt: c.created_at || new Date().toISOString(),
+          }));
+
+          set({ clients: mappedClients });
+        }
+
+        if (dbDeals && dbDeals.length > 0) {
+          const mappedDeals: Deal[] = dbDeals.map((d: any) => ({
+            id: d.id,
+            organizationId: d.organization_id || 'org_bertumbuh',
+            clientName: d.client_name,
+            clientId: d.client_id,
+            title: d.title,
+            stage: d.stage || 'lead',
+            value: Number(d.value) || 0,
+            probability: d.probability || 50,
+            aeId: d.ae_id || 'u3',
+            aeName: d.ae_name || 'Account Executive',
+            source: d.source || 'Direct',
+            createdAt: d.created_at || new Date().toISOString(),
+            updatedAt: d.updated_at || new Date().toISOString(),
+          }));
+          set({ deals: mappedDeals });
+        }
+
+        if (dbPackages && dbPackages.length > 0) {
+          const mappedPackages: ServicePackage[] = dbPackages.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            description: p.description || '',
+            basePrice: Number(p.base_price) || 0,
+            deliverables: p.deliverables || [],
+            color: p.color || 'var(--blue)',
+            status: p.status || 'approved',
+            requestedBy: 'System',
+          }));
+          set({ packages: mappedPackages });
+        }
+
+        if (dbQuotations && dbQuotations.length > 0) {
+          const mappedQuotations: Quotation[] = dbQuotations.map((q: any) => ({
+            id: q.id,
+            organizationId: 'org_bertumbuh',
+            quotationNumber: q.quotation_number,
+            clientId: q.client_id,
+            clientName: q.client_name,
+            dealId: q.deal_id,
+            issueDate: q.issue_date || new Date().toISOString(),
+            validityDays: q.validity_days || 30,
+            lineItems: q.line_items || [],
+            subtotal: Number(q.subtotal) || 0,
+            tax: Number(q.tax) || 0,
+            total: Number(q.total) || 0,
+            status: q.status || 'draft',
+            notes: q.notes || '',
+          }));
+          set({ quotations: mappedQuotations });
+        }
+      },
+
+      clearMockData: () => {
+        set({ clients: [], deals: [], packages: [], quotations: [] });
+      },
+
+      addClient: (client) => {
+        set((state) => ({ clients: [client, ...state.clients] }));
+        supabaseDataService.upsertClient({
+          id: client.id.startsWith('c_') || client.id.startsWith('client-') ? undefined : client.id,
+          name: client.name,
+          industry: client.industry,
+          status: client.status,
+          contacts: client.contacts,
+          owned_by_ae: client.ownedByAe,
+          total_revenue: client.totalRevenue,
+          active_projects: client.activeProjects,
+        });
+      },
+
       updateClientStatus: (clientId, status) => set((state) => ({
         clients: state.clients.map(c => c.id === clientId ? { ...c, status } : c)
       })),
+
 
       addDeal: (dealData) =>
         set((state) => {
