@@ -21,8 +21,8 @@ interface PMStoreState {
 export const usePMStore = create<PMStoreState>()(
   persist(
     (set, get) => ({
-      projects: initialProjects,
-      tasks: initialTasks,
+      projects: [],
+      tasks: [],
 
       fetchFromSupabase: async () => {
         const [dbProjects, dbTasks] = await Promise.all([

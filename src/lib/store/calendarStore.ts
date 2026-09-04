@@ -28,24 +28,7 @@ interface CalendarStoreState {
 export const useCalendarStore = create<CalendarStoreState>()(
   persist(
     (set) => ({
-      customEvents: [
-        // Initial events for demonstration
-        {
-          id: 'evt-mock-1',
-          title: 'Evaluasi Kinerja Q2',
-          description: 'Rapat evaluasi hasil kinerja masing-masing divisi untuk kuartal kedua.',
-          startDate: '2026-06-15',
-          startTime: '09:00',
-          endDate: '2026-06-15',
-          endTime: '10:30',
-          assigneeId: 'u4', // PM
-          assigneeName: 'Project Manager',
-          category: 'meeting',
-          color: 'var(--blue)',
-          createdBy: 'u1',
-          createdAt: new Date().toISOString(),
-        },
-      ],
+      customEvents: [],
 
       clearMockData: () => set({ customEvents: [] }),
 

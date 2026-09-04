@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useHRStore } from '@/lib/store/hrStore';
+import { usePMStore } from '@/lib/store/pmStore';
 import { TrendingUp, Clock, AlertTriangle, Award, CheckCircle, Star, Filter, Printer, X, FileText } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
@@ -19,19 +20,40 @@ interface EmployeePerformance {
   hrRecommendation: 'Bonus & Apresiasi' | 'Kinerja Baik' | 'Perlu Monitoring';
 }
 
-const initialPerformanceData: EmployeePerformance[] = [
-  { id: 'e1', name: 'Ghani Affan', role: 'Graphic Designer', div: 'Design', totalTasks: 48, onTimeTasks: 46, overdueTasks: 2, overdueRate: 4.2, avgDelayDays: 0.2, rating: 4.9, hrRecommendation: 'Bonus & Apresiasi' },
-  { id: 'e2', name: 'Amalia', role: 'Social Media Specialist', div: 'Social Media', totalTasks: 52, onTimeTasks: 49, overdueTasks: 3, overdueRate: 5.7, avgDelayDays: 0.4, rating: 4.8, hrRecommendation: 'Kinerja Baik' },
-  { id: 'e3', name: 'Pipit Widyawati', role: 'Content Creator', div: 'Social Media', totalTasks: 35, onTimeTasks: 32, overdueTasks: 3, overdueRate: 8.5, avgDelayDays: 0.6, rating: 4.5, hrRecommendation: 'Kinerja Baik' },
-  { id: 'e4', name: 'Rafi', role: 'Copywriter', div: 'Social Media', totalTasks: 28, onTimeTasks: 24, overdueTasks: 4, overdueRate: 14.2, avgDelayDays: 1.2, rating: 4.1, hrRecommendation: 'Perlu Monitoring' },
-  { id: 'e5', name: 'Bayu', role: 'Videographer', div: 'Production', totalTasks: 40, onTimeTasks: 39, overdueTasks: 1, overdueRate: 2.5, avgDelayDays: 0.1, rating: 4.95, hrRecommendation: 'Bonus & Apresiasi' },
-];
-
 export function HRPerformanceTrackingView() {
   const { employees } = useHRStore();
-  const [performanceList, setPerformanceList] = useState<EmployeePerformance[]>(initialPerformanceData);
+  const tasks = usePMStore(state => state.tasks);
   const [selectedDiv, setSelectedDiv] = useState<string>('All');
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+
+  const performanceList: EmployeePerformance[] = useMemo(() => {
+    if (employees.length === 0) return [];
+    const todayStr = new Date().toISOString().split('T')[0];
+    return employees.map(emp => {
+      const empTasks = tasks.filter(t => t.assigneeId === emp.id || t.assigneeName === emp.name);
+      const totalTasks = empTasks.length;
+      const doneTasks = empTasks.filter(t => t.status === 'done').length;
+      const overdueTasks = empTasks.filter(t => t.status !== 'done' && t.dueDate && t.dueDate < todayStr).length;
+      const onTimeTasks = doneTasks;
+      const overdueRate = totalTasks === 0 ? 0 : Number(((overdueTasks / totalTasks) * 100).toFixed(1));
+      const rating = totalTasks === 0 ? 5.0 : Math.max(3.0, Number((5.0 - (overdueRate / 20)).toFixed(1)));
+      const hrRecommendation: EmployeePerformance['hrRecommendation'] = overdueRate > 10 ? 'Perlu Monitoring' : overdueRate > 5 ? 'Kinerja Baik' : 'Bonus & Apresiasi';
+
+      return {
+        id: emp.id,
+        name: emp.name,
+        role: emp.role,
+        div: emp.div,
+        totalTasks,
+        onTimeTasks,
+        overdueTasks,
+        overdueRate,
+        avgDelayDays: overdueTasks > 0 ? 0.5 : 0,
+        rating,
+        hrRecommendation
+      };
+    });
+  }, [employees, tasks]);
 
   const filteredList = useMemo(() => {
     return performanceList.filter(p => selectedDiv === 'All' || p.div === selectedDiv);
@@ -39,11 +61,14 @@ export function HRPerformanceTrackingView() {
 
   // Overall HR Performance Metrics
   const metrics = useMemo(() => {
+    if (performanceList.length === 0) {
+      return { totalTasks: 0, totalOnTime: 0, totalOverdue: 0, onTimeRate: 100, overdueRate: '0.0', avgRating: '5.00' };
+    }
     const totalTasks = performanceList.reduce((s, p) => s + p.totalTasks, 0);
     const totalOnTime = performanceList.reduce((s, p) => s + p.onTimeTasks, 0);
     const totalOverdue = performanceList.reduce((s, p) => s + p.overdueTasks, 0);
 
-    const onTimeRate = Math.round((totalOnTime / totalTasks) * 100);
+    const onTimeRate = totalTasks === 0 ? 100 : Math.round((totalOnTime / totalTasks) * 100);
     const overdueRate = (100 - onTimeRate).toFixed(1);
     const avgRating = (performanceList.reduce((s, p) => s + p.rating, 0) / performanceList.length).toFixed(2);
 

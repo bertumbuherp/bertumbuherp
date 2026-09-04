@@ -12,45 +12,7 @@ const initialPackages: ServicePackage[] = [
   { id: 'pkg-4', name: 'Performance Marketing Package', description: 'Strategi iklan digital berbayar untuk meningkatkan konversi.', basePrice: 48000000, deliverables: ['Meta Ads', 'Google Ads', 'Monthly Analytics Report'], color: 'var(--orange)', status: 'approved', requestedBy: 'System' },
 ];
 
-const initialQuotations: Quotation[] = [
-  {
-    id: 'qto-1',
-    organizationId: 'org-1',
-    quotationNumber: 'QTO-2026-06-001',
-    clientId: 'client-1',
-    clientName: 'Raja Usus',
-    dealId: 'deal-1',
-    issueDate: new Date('2026-06-12T00:00:00.000Z').toISOString(),
-    validityDays: 30,
-    lineItems: [
-      { id: 'item-1', description: 'Performance Marketing Package (Bulanan)', quantity: 1, unitPrice: 40000000, total: 40000000 },
-      { id: 'item-2', description: 'Setup & Integrasi Tracking (One-time)', quantity: 1, unitPrice: 8000000, total: 8000000 }
-    ],
-    subtotal: 48000000,
-    tax: 5280000,
-    total: 53280000,
-    status: 'sent',
-    notes: 'Penawaran awal untuk campaign Q3.'
-  },
-  {
-    id: 'qto-2',
-    organizationId: 'org-1',
-    quotationNumber: 'QTO-2026-06-002',
-    clientId: 'client-2',
-    clientName: 'Sambal Bakar',
-    dealId: 'deal-2',
-    issueDate: new Date('2026-06-13T00:00:00.000Z').toISOString(),
-    validityDays: 14,
-    lineItems: [
-      { id: 'item-3', description: 'Social Media Management 6 Bulan', quantity: 1, unitPrice: 72000000, total: 72000000 }
-    ],
-    subtotal: 72000000,
-    tax: 7920000,
-    total: 79920000,
-    status: 'draft',
-    notes: 'Paket branding lengkap.'
-  }
-];
+const initialQuotations: Quotation[] = [];
 
 interface CrmStoreState {
   clients: Client[];
@@ -87,13 +49,10 @@ interface CrmStoreState {
 export const useCrmStore = create<CrmStoreState>()(
   persist(
     (set, get) => ({
-      clients: initialClients,
-      deals: initialDeals.map(d => ({
-        ...d,
-        source: d.source || 'Website',
-      })),
+      clients: [],
+      deals: [],
       packages: initialPackages,
-      quotations: initialQuotations,
+      quotations: [],
 
       fetchFromSupabase: async () => {
         const [dbClients, dbDeals, dbPackages, dbQuotations] = await Promise.all([

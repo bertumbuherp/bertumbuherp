@@ -35,26 +35,7 @@ interface SystemStatusStoreState {
   clearResolvedErrors: () => void;
 }
 
-const initialErrors: SystemErrorLog[] = [
-  {
-    id: 'err-1',
-    timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-    severity: 'info',
-    module: 'AUTH',
-    errorMessage: 'Kredensial login tidak valid untuk percobaan user (Password Mismatch).',
-    componentRoute: '/login',
-    status: 'resolved',
-  },
-  {
-    id: 'err-2',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    severity: 'warning',
-    module: 'FINANCE',
-    errorMessage: 'Peringatan toleransi pembulatan desimal pajak PPh 23 terdeteksi pada Invoice INV-2026-05-001.',
-    componentRoute: '/finance/accounting',
-    status: 'investigating',
-  },
-];
+const initialErrors: SystemErrorLog[] = [];
 
 export const useSystemStatusStore = create<SystemStatusStoreState>()(
   persist(
@@ -95,7 +76,7 @@ export const useSystemStatusStore = create<SystemStatusStoreState>()(
         details: 'Zustand localStorage persistence tersinkronisasi 100%.',
       },
 
-      errorLogs: initialErrors,
+      errorLogs: [],
       isDiagnosticsRunning: false,
 
       runDiagnostics: async () => {

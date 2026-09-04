@@ -11,17 +11,17 @@ export function LeaveTimelineGuardingView() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // PM Assignment Guarding Test Widget State
-  const [testUserId, setTestUserId] = useState('e1'); // Ghani Affan
-  const [testTaskDate, setTestTaskDate] = useState('2026-06-11'); // Overlaps with Ghani's leave (10-12 Jun)
+  const [testUserId, setTestUserId] = useState(employees[0]?.id || '');
+  const [testTaskDate, setTestTaskDate] = useState(new Date().toISOString().split('T')[0]);
   const [testResult, setTestResult] = useState<{ isBlocked: boolean; message: string } | null>(null);
 
   // Leave Application Form State
   const [formData, setFormData] = useState({
-    userId: 'e1',
+    userId: employees[0]?.id || '',
     type: 'Tahunan',
-    startDate: '2026-06-20',
-    endDate: '2026-06-22',
-    reason: 'Acara Keluarga'
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
+    reason: 'Keperluan Pribadi'
   });
 
   // Guarding Logic: Check if employee is on leave on target date
@@ -118,9 +118,13 @@ export function LeaveTimelineGuardingView() {
               onChange={e => setTestUserId(e.target.value)}
               className="w-full border border-gray-300 rounded-xl p-2.5 text-xs font-bold bg-white text-gray-900 focus:outline-none focus:border-amber-500 shadow-sm"
             >
-              {employees.map(e => (
-                <option key={e.id} value={e.id}>{e.name} ({e.div})</option>
-              ))}
+              {employees.length === 0 ? (
+                <option value="">Belum ada karyawan terdaftar</option>
+              ) : (
+                employees.map(e => (
+                  <option key={e.id} value={e.id}>{e.name} ({e.div})</option>
+                ))
+              )}
             </select>
           </div>
 
@@ -176,7 +180,14 @@ export function LeaveTimelineGuardingView() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 bg-white">
-            {leaves.map(l => (
+            {leaves.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="py-12 text-center text-gray-500 font-medium">
+                  Belum ada pengajuan cuti karyawan. Klik tombol <strong>"+ Ajukan Cuti Baru"</strong> untuk membuat pengajuan baru.
+                </td>
+              </tr>
+            ) : (
+              leaves.map(l => (
               <tr key={l.id} className="hover:bg-gray-50/80 transition-colors">
                 <td className="py-3.5 px-4 font-bold text-gray-900">{l.userName}</td>
                 <td className="py-3.5 px-4">
@@ -222,12 +233,8 @@ export function LeaveTimelineGuardingView() {
                   )}
                 </td>
               </tr>
-            ))}
-            {leaves.length === 0 && (
-              <tr>
-                <td colSpan={7} className="py-6 text-center text-gray-400">Belum ada data pengajuan cuti.</td>
-              </tr>
-            )}
+            ))
+          )}
           </tbody>
         </table>
       </div>

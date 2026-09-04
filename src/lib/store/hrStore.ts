@@ -69,37 +69,18 @@ interface HRStoreState {
   clockOut: (userId: string) => void;
 }
 
-const initialOvertimes: Overtime[] = [
-  { id: 'ot1', userId: 'e6', userName: 'Dimas Prasetyo', projectId: 'p1', date: '2026-06-15T18:00', durationHours: 3, reason: 'Lembur kejar deadline pitch', status: 'pending' },
-  { id: 'ot2', userId: 'e7', userName: 'Sarah Wijaya', projectId: 'p2', date: '2026-06-12T19:00', durationHours: 2, reason: 'Revisi desain mendadak', status: 'approved' },
-  { id: 'ot3', userId: 'e6', userName: 'Dimas Prasetyo', projectId: 'p3', date: '2026-05-20T17:30', durationHours: 4, reason: 'Maintenance server', status: 'declined' },
-];
-
-const initialLeaves: Leave[] = [
-  { id: 'c1', userId: 'e1', userName: 'Ghani Affan', type: 'Tahunan', startDate: '2026-06-10', endDate: '2026-06-12', reason: 'Liburan keluarga', status: 'approved_hr', durationDays: 3 },
-  { id: 'c2', userId: 'e2', userName: 'Amalia', type: 'Sakit', startDate: '2026-05-02', endDate: '2026-05-02', reason: 'Demam', status: 'approved_hr', durationDays: 1 },
-];
-
-const initialEmployees: Employee[] = [
-  { id: 'e1', name: 'Ghani Affan', role: 'Graphic Designer', div: 'Design', type: 'Full-Time', baseSalary: 3000000, status: 'active' },
-  { id: 'e2', name: 'Amalia', role: 'Social Media Specialist', div: 'Social Media', type: 'Full-Time', baseSalary: 2800000, status: 'active' },
-  { id: 'e3', name: 'Pipit Widyawati', role: 'Content Creator', div: 'Social Media', type: 'Freelance', baseSalary: 1500000, status: 'active' },
-  { id: 'e4', name: 'Rafi', role: 'Copywriter', div: 'Social Media', type: 'Freelance', baseSalary: 1000000, status: 'active' },
-  { id: 'e5', name: 'Bayu', role: 'Videographer', div: 'Production', type: 'Full-Time', baseSalary: 3500000, status: 'active' },
-];
-
-const initialAttendances: Attendance[] = [
-  { id: 'a1', userId: 'e1', userName: 'Ghani Affan', date: new Date().toISOString().split('T')[0], clockIn: new Date(new Date().setHours(8, 30, 0, 0)).toISOString(), clockOut: null, status: 'present' },
-  { id: 'a2', userId: 'e2', userName: 'Amalia', date: new Date().toISOString().split('T')[0], clockIn: new Date(new Date().setHours(8, 45, 0, 0)).toISOString(), clockOut: null, status: 'present' },
-];
+const initialOvertimes: Overtime[] = [];
+const initialLeaves: Leave[] = [];
+const initialEmployees: Employee[] = [];
+const initialAttendances: Attendance[] = [];
 
 export const useHRStore = create<HRStoreState>()(
   persist(
     (set, get) => ({
-      overtimes: initialOvertimes,
-      leaves: initialLeaves,
-      employees: initialEmployees,
-      attendances: initialAttendances,
+      overtimes: [],
+      leaves: [],
+      employees: [],
+      attendances: [],
 
       fetchFromSupabase: async () => {
         const [dbOvertimes, dbLeaves, dbAttendances] = await Promise.all([

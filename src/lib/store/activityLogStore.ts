@@ -25,24 +25,12 @@ interface ActivityLogStoreState {
   clearLogs: () => void;
 }
 
-const initialLogs: ActivityLog[] = [
-  {
-    id: 'log-101',
-    timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-    userId: 'u1',
-    userName: 'Owner / Direktur Utama',
-    userRole: 'owner',
-    module: 'AUTH',
-    action: 'LOGIN',
-    details: 'Pengguna berhasil masuk ke Portal Internal Bertumbuh ERP.',
-    ipAddress: '192.168.1.10'
-  },
-];
+const initialLogs: ActivityLog[] = [];
 
 export const useActivityLogStore = create<ActivityLogStoreState>()(
   persist(
     (set) => ({
-      logs: initialLogs,
+      logs: [],
 
       fetchFromSupabase: async () => {
         const dbLogs = await supabaseDataService.getActivityLogs();
