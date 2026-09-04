@@ -17,21 +17,7 @@ interface Allocation {
   roleInProject: string;
 }
 
-const initialAllocations: Allocation[] = [
-  { id: 'al1', userId: 'e1', userName: 'Ghani Affan', department: 'Design', projectName: 'Social Media Branding 2026', clientName: 'Kopi Nusantara', allocationPercent: 40, hoursPerWeek: 16, roleInProject: 'Lead Designer' },
-  { id: 'al2', userId: 'e1', userName: 'Ghani Affan', department: 'Design', projectName: 'Rebranding & Packaging', clientName: 'Sambal Bu Nik', allocationPercent: 35, hoursPerWeek: 14, roleInProject: 'Packaging Specialist' },
-  { id: 'al3', userId: 'e1', userName: 'Ghani Affan', department: 'Design', projectName: 'Internal Brand Assets', clientName: 'Internal PT Bertumbuh', allocationPercent: 25, hoursPerWeek: 10, roleInProject: 'Brand Support' },
-
-  { id: 'al4', userId: 'e2', userName: 'Amalia', department: 'Social Media', projectName: 'Social Media Branding 2026', clientName: 'Kopi Nusantara', allocationPercent: 50, hoursPerWeek: 20, roleInProject: 'Social Media Lead' },
-  { id: 'al5', userId: 'e2', userName: 'Amalia', department: 'Social Media', projectName: 'Performance Ads Campaign', clientName: 'Skincare Glowing', allocationPercent: 50, hoursPerWeek: 20, roleInProject: 'Content Strategist' },
-
-  { id: 'al6', userId: 'e3', userName: 'Pipit Widyawati', department: 'Social Media', projectName: 'Rebranding & Packaging', clientName: 'Sambal Bu Nik', allocationPercent: 60, hoursPerWeek: 24, roleInProject: 'Content Writer' },
-  { id: 'al7', userId: 'e3', userName: 'Pipit Widyawati', department: 'Social Media', projectName: 'Performance Ads Campaign', clientName: 'Skincare Glowing', allocationPercent: 40, hoursPerWeek: 16, roleInProject: 'Copywriter' },
-
-  { id: 'al8', userId: 'e5', userName: 'Bayu', department: 'Production', projectName: 'Social Media Branding 2026', clientName: 'Kopi Nusantara', allocationPercent: 45, hoursPerWeek: 18, roleInProject: 'Videographer' },
-  { id: 'al9', userId: 'e5', userName: 'Bayu', department: 'Production', projectName: 'Rebranding & Packaging', clientName: 'Sambal Bu Nik', allocationPercent: 45, hoursPerWeek: 18, roleInProject: 'Editor' },
-  { id: 'al10', userId: 'e5', userName: 'Bayu', department: 'Production', projectName: 'Internal Brand Assets', clientName: 'Internal PT Bertumbuh', allocationPercent: 10, hoursPerWeek: 4, roleInProject: 'Asset Documentation' },
-];
+const initialAllocations: Allocation[] = [];
 
 export function TeamAllocationMatrixView() {
   const { employees } = useHRStore();
@@ -43,8 +29,8 @@ export function TeamAllocationMatrixView() {
   // New Allocation Form State
   const [formData, setFormData] = useState({
     userId: '',
-    clientName: 'Kopi Nusantara',
-    projectName: 'Social Media Branding 2026',
+    clientName: '',
+    projectName: '',
     allocationPercent: 30,
     roleInProject: 'Team Member'
   });

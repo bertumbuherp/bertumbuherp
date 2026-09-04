@@ -5,6 +5,20 @@ Dokumen ini mencatat secara sistematis seluruh perubahan file, penambahan fitur,
 
 ## 📅 Tanggal: 04 September 2026
 
+### 3. Pembersihan 100% Mock Data untuk Operasional Nyata (Clean Operational Reset)
+
+#### 📄 [MODIFY] `src/lib/store/*` (`hrStore.ts`, `financeStore.ts`, `crmStore.ts`, `pmStore.ts`, `calendarStore.ts`, `activityLogStore.ts`, `systemStatusStore.ts`)
+- **Tujuan**: Mereset seluruh array initial state simulasi/mock data menjadi array kosong `[]`.
+- **Detail Perubahan**: Mengosongkan data transaksi demo (cuti, lembur, absensi, jurnal akuntansi, reimbursement, payroll, invoice, clients, deals, projects, tasks, event kalender, audit log, dan error logs). Mempertahankan 9 akun pegawai internal untuk 6 role.
+
+#### 📄 [MODIFY] Komponen UI (`LeaveTimelineGuardingView.tsx`, `HRPerformanceTrackingView.tsx`, `TeamAllocationMatrixView.tsx`, `src/app/(dashboard)/pm/reports/page.tsx`)
+- **Tujuan**: Mengubah tampilan komponen UI dari data sampel hardcoded menjadi 100% kalkulasi dinamis & empty states bersih.
+- **Detail Perubahan**: Menghapus fallback hardcoded nama "Ghani Affan", "Amalia", "PT Maju Bersama", "Kopi Nusantara", dll. Menambahkan *empty state* pada tabel dan form selector.
+
+#### 📄 [MODIFY] `src/backend/repositories/mockRepository.ts`
+- **Tujuan**: Mereset repository sampel data dummy backend.
+- **Detail Perubahan**: Mengosongkan seluruh array transaksional `clients`, `deals`, `projects`, `tasks`, `invoices`, `expenses`, `overtimeEntries`, `clientReports`, `teamWorkload`, `atRiskAlerts` menjadi `[]`.
+
 ### 2. Perbaikan Next.js Production Build (Suspense Boundary Vercel Deployment)
 
 #### 📄 [MODIFY] `src/app/(dashboard)/super_admin/page.tsx`

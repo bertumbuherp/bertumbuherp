@@ -5,11 +5,8 @@ import { usePMStore } from '@/lib/store/pmStore';
 import { FileText, MessageSquare, Download, Clock, History } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
-// Mock DB for history
-const mockHistory = [
-  { id: 'h1', projectId: 'p1', clientName: 'PT Maju Bersama', date: '2026-05-15T10:00:00Z', format: 'WhatsApp' },
-  { id: 'h2', projectId: 'p2', clientName: 'Kopi Nusantara', date: '2026-05-20T14:30:00Z', format: 'PDF' },
-];
+// DB for report history
+const mockHistory: Array<{ id: string; projectId: string; clientName: string; date: string; format: string }> = [];
 
 export default function ReportGeneratorPage() {
   const { projects, tasks } = usePMStore();
