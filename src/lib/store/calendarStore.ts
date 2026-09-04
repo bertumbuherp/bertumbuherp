@@ -19,6 +19,7 @@ export interface CustomEvent {
 
 interface CalendarStoreState {
   customEvents: CustomEvent[];
+  clearMockData: () => void;
   addCustomEvent: (event: CustomEvent) => void;
   updateCustomEvent: (event: CustomEvent) => void;
   deleteCustomEvent: (id: string) => void;
@@ -28,7 +29,7 @@ export const useCalendarStore = create<CalendarStoreState>()(
   persist(
     (set) => ({
       customEvents: [
-        // Mock initial events in June 2026 for demonstration
+        // Initial events for demonstration
         {
           id: 'evt-mock-1',
           title: 'Evaluasi Kinerja Q2',
@@ -37,44 +38,16 @@ export const useCalendarStore = create<CalendarStoreState>()(
           startTime: '09:00',
           endDate: '2026-06-15',
           endTime: '10:30',
-          assigneeId: 'u4', // PM - Dewi Lestari
-          assigneeName: 'Dewi Lestari',
+          assigneeId: 'u4', // PM
+          assigneeName: 'Project Manager',
           category: 'meeting',
           color: 'var(--blue)',
           createdBy: 'u1',
           createdAt: new Date().toISOString(),
         },
-        {
-          id: 'evt-mock-2',
-          title: 'Negosiasi Penawaran - Properti Andalan',
-          description: 'Membahas detail kontrak kerja sama pengelolaan media sosial selama 6 bulan.',
-          startDate: '2026-06-18',
-          startTime: '13:00',
-          endDate: '2026-06-18',
-          endTime: '14:30',
-          assigneeId: 'u3', // AE - Andi Firmansyah
-          assigneeName: 'Andi Firmansyah',
-          category: 'meeting',
-          color: 'var(--yellow)',
-          createdBy: 'u1',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'evt-mock-3',
-          title: 'Review Asset Desain Campaign',
-          description: 'Meninjau final draft materi promosi dari tim kreatif.',
-          startDate: '2026-06-16',
-          startTime: '15:00',
-          endDate: '2026-06-16',
-          endTime: '16:00',
-          assigneeId: 'u7', // Designer - Dimas Prasetyo
-          assigneeName: 'Dimas Prasetyo',
-          category: 'meeting',
-          color: 'var(--violet)',
-          createdBy: 'u4',
-          createdAt: new Date().toISOString(),
-        }
       ],
+
+      clearMockData: () => set({ customEvents: [] }),
 
       addCustomEvent: (event) =>
         set((state) => ({ customEvents: [...state.customEvents, event] })),
@@ -96,3 +69,4 @@ export const useCalendarStore = create<CalendarStoreState>()(
     }
   )
 );
+

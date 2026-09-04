@@ -23,7 +23,7 @@ export interface GoogleSyncResult {
 const STORAGE_KEY = 'bertumbuh_gcal_connection';
 
 export const GoogleCalendarSync = {
-  getConnectionState(): GoogleCalendarConnectionState {
+  getConnectionState(fallbackEmail: string = 'pm@bertumbuh.id'): GoogleCalendarConnectionState {
     if (typeof window === 'undefined') {
       return { isConnected: false, autoSyncEnabled: false, syncCount: 0 };
     }
@@ -35,7 +35,7 @@ export const GoogleCalendarSync = {
     }
     return {
       isConnected: true,
-      googleEmail: 'dewi.pm@bertumbuh.id',
+      googleEmail: fallbackEmail,
       autoSyncEnabled: true,
       lastSyncedAt: new Date().toISOString(),
       syncCount: 14,
@@ -48,7 +48,8 @@ export const GoogleCalendarSync = {
     }
   },
 
-  connect(googleEmail: string = 'dewi.pm@bertumbuh.id'): GoogleCalendarConnectionState {
+  connect(googleEmail: string = 'pm@bertumbuh.id'): GoogleCalendarConnectionState {
+
     const newState: GoogleCalendarConnectionState = {
       isConnected: true,
       googleEmail,

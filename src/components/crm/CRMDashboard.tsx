@@ -12,9 +12,12 @@ export function CRMDashboard() {
 
   if (!session) return null;
 
-  // Filter deals for the current AE (or all if not AE)
-  let myDeals = deals.filter(d => d.aeId === session.userId || d.aeName === session.name);
-  if (myDeals.length === 0) myDeals = deals; // fallback for mock
+  const isAdmin = session.roles?.some(r => ['owner', 'super_admin', 'ae'].includes(r));
+  const myDeals = isAdmin
+    ? deals
+    : deals.filter(d => d.aeId === session.userId || d.aeName === session.name);
+
+
 
   const activeDeals = myDeals.filter(d => d.stage !== 'won' && d.stage !== 'lost');
   const wonDeals = myDeals.filter(d => d.stage === 'won');

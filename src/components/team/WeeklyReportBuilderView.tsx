@@ -1,8 +1,8 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import { usePMStore } from '@/lib/store/pmStore';
+import { useUserStore } from '@/lib/store/userStore';
 import { formatCurrency } from '@/lib/utils';
-import { teamWorkload, clientReports } from '@/backend/repositories/mockRepository';
 import { FileText, Download, Printer, CheckCircle, ChevronDown, ChevronUp, Calendar, BarChart2, Users, AlertTriangle, TrendingUp } from 'lucide-react';
 
 type ReportWeek = 'Week 1' | 'Week 2' | 'Week 3' | 'Week 4';
@@ -36,6 +36,45 @@ const DIVISION_COLORS: Record<string, string> = {
 
 export function WeeklyReportBuilderView() {
   const { projects, tasks } = usePMStore();
+  const { users: employees } = useUserStore();
+
+  const teamWorkload = useMemo(() => {
+    return employees.map(emp => {
+      const memberTasks = tasks.filter(t => t.assigneeId === emp.id || t.assigneeName === emp.name);
+      const hoursAllocated = memberTasks.reduce((s, t) => s + (t.estimatedHours || 0), 0);
+      const hoursLogged = memberTasks.reduce((s, t) => s + (t.loggedHours || 0), 0);
+      return {
+        employeeId: emp.id,
+        name: emp.name,
+        position: emp.position || 'Staff',
+        subTeam: emp.department || 'Brand',
+        weeklyHoursAllocated: hoursAllocated,
+        hoursLogged: hoursLogged,
+        utilizationPercent: Math.min(100, Math.round((hoursAllocated / 40) * 100)),
+        activeTasksCount: memberTasks.filter(t => t.status !== 'done').length,
+        pendingTasks: memberTasks.filter(t => t.status !== 'done').length,
+        completedTasks: memberTasks.filter(t => t.status === 'done').length,
+      };
+    });
+  }, [employees, tasks]);
+
+
+  const clientReports = useMemo(() => {
+    return projects.map(p => {
+      const pTasks = tasks.filter(t => t.projectId === p.id);
+      const completed = pTasks.filter(t => t.status === 'done').length;
+      return {
+        id: p.id,
+        clientName: p.clientName,
+        projectName: p.name,
+        status: p.status,
+        overallProgress: pTasks.length > 0 ? Math.round((completed / pTasks.length) * 100) : 0,
+        completedDeliverables: pTasks.filter(t => t.status === 'done').map(t => t.title),
+        upcomingDeliverables: pTasks.filter(t => t.status !== 'done').map(t => t.title),
+      };
+    });
+  }, [projects, tasks]);
+
   const [config, setConfig] = useState<WeeklyReportConfig>({
     week: 'Week 4',
     division: 'Semua Divisi',
@@ -57,6 +96,7 @@ export function WeeklyReportBuilderView() {
       return true;
     });
   }, [tasks, config.division]);
+
 
   const taskStats = useMemo(() => {
     const done = reportTasks.filter(t => t.status === 'done').length;

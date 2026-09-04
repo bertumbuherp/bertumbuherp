@@ -1,9 +1,16 @@
-'use client';
 import { useState } from 'react';
 import { useSystemStatusStore, SystemErrorLog } from '@/lib/store/systemStatusStore';
-import { Activity, Database, Server, Code, HardDrive, RefreshCw, AlertTriangle, CheckCircle2, XCircle, Info, ShieldCheck, Bug, Search } from 'lucide-react';
+import { usePMStore } from '@/lib/store/pmStore';
+import { useCrmStore } from '@/lib/store/crmStore';
+import { useFinanceStore } from '@/lib/store/financeStore';
+import { useHRStore } from '@/lib/store/hrStore';
+import { useUserStore } from '@/lib/store/userStore';
+import { useCalendarStore } from '@/lib/store/calendarStore';
+import { useActivityLogStore } from '@/lib/store/activityLogStore';
+import { Activity, Database, Server, Code, HardDrive, RefreshCw, AlertTriangle, CheckCircle2, XCircle, Info, ShieldCheck, Bug, Search, Trash2, CloudDownload } from 'lucide-react';
 
 export default function SystemStatusView() {
+  const [opNotice, setOpNotice] = useState<string | null>(null);
   const {
     databaseStatus,
     serverStatus,
@@ -15,6 +22,34 @@ export default function SystemStatusView() {
     resolveError,
     clearResolvedErrors,
   } = useSystemStatusStore();
+
+  const handleClearMockData = () => {
+    if (confirm('Apakah Anda yakin ingin membersihkan seluruh Mock Data dan menginisialisasi state bersih untuk Operations Real?')) {
+      usePMStore.getState().clearMockData();
+      useCrmStore.getState().clearMockData();
+      useFinanceStore.getState().clearMockData();
+      useHRStore.getState().clearMockData();
+      useCalendarStore.getState().clearMockData();
+      useActivityLogStore.getState().clearMockData();
+      setOpNotice('Seluruh Mock Data telah dibersihkan! Aplikasi siap digunakan secara bersih oleh tim.');
+      setTimeout(() => setOpNotice(null), 5000);
+    }
+  };
+
+  const handleSyncSupabase = async () => {
+    setOpNotice('Menghubungkan ke Supabase Cloud & Memuat data real...');
+    await Promise.all([
+      useUserStore.getState().fetchFromSupabase(),
+      usePMStore.getState().fetchFromSupabase(),
+      useCrmStore.getState().fetchFromSupabase(),
+      useFinanceStore.getState().fetchFromSupabase(),
+      useHRStore.getState().fetchFromSupabase(),
+      useActivityLogStore.getState().fetchFromSupabase(),
+    ]);
+    setOpNotice('Sinkronisasi data PostgreSQL Supabase Cloud berhasil!');
+    setTimeout(() => setOpNotice(null), 5000);
+  };
+
 
   const [severityFilter, setSeverityFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -85,6 +120,49 @@ export default function SystemStatusView() {
           <span>{isDiagnosticsRunning ? 'Uji Diagnostik...' : 'Jalankan Diagnostik System'}</span>
         </button>
       </div>
+
+      {opNotice && (
+        <div className="p-4 rounded-xl bg-emerald-500 text-white text-xs font-bold flex items-center justify-between shadow-md">
+          <span className="flex items-center gap-2">
+            <CheckCircle2 size={16} />
+            {opNotice}
+          </span>
+        </div>
+      )}
+
+      {/* Control Card: Real Operations & Mock Data Management */}
+      <div className="card p-5 bg-white border border-gray-200 rounded-2xl shadow-sm space-y-3">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-gray-900 text-sm">Manajemen Operations Real &amp; Database State</h3>
+              <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-200">
+                PRODUCTION READY
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Gunakan kontrol ini untuk membersihkan seluruh data simulasi (Mock Data) saat beralih ke operasional nyata tim PT Bertumbuh Creative Agency atau menyinkronkan data secara live dari Supabase PostgreSQL Cloud.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={handleSyncSupabase}
+              className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+            >
+              <CloudDownload size={14} />
+              <span>Sinkronkan Supabase Cloud</span>
+            </button>
+            <button
+              onClick={handleClearMockData}
+              className="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+            >
+              <Trash2 size={14} />
+              <span>Bersihkan Mock Data &amp; Operational Clean State</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
 
       {/* 4 Health Pillars Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { supabaseDataService } from '@/lib/services/supabaseDataService';
+
 
 export interface Overtime {
   id: string;
@@ -50,6 +52,9 @@ interface HRStoreState {
   employees: Employee[];
   attendances: Attendance[];
   
+  fetchFromSupabase: () => Promise<void>;
+  clearMockData: () => void;
+
   addOvertime: (overtime: Overtime) => void;
   updateOvertimeStatus: (id: string, status: Overtime['status']) => void;
   
@@ -95,6 +100,64 @@ export const useHRStore = create<HRStoreState>()(
       leaves: initialLeaves,
       employees: initialEmployees,
       attendances: initialAttendances,
+
+      fetchFromSupabase: async () => {
+        const [dbOvertimes, dbLeaves, dbAttendances] = await Promise.all([
+          supabaseDataService.getOvertimes(),
+          supabaseDataService.getLeaves(),
+          supabaseDataService.getAttendances(),
+        ]);
+
+        if (dbOvertimes && dbOvertimes.length > 0) {
+          set({
+            overtimes: dbOvertimes.map((ot: any) => ({
+              id: ot.id,
+              userId: ot.user_id,
+              userName: ot.user_name,
+              projectId: ot.project_id || '',
+              date: ot.date,
+              durationHours: Number(ot.duration_hours) || 0,
+              reason: ot.reason || '',
+              status: ot.status || 'pending',
+            })),
+          });
+        }
+
+        if (dbLeaves && dbLeaves.length > 0) {
+          set({
+            leaves: dbLeaves.map((l: any) => ({
+              id: l.id,
+              userId: l.user_id,
+              userName: l.user_name,
+              type: l.type,
+              startDate: l.start_date,
+              endDate: l.end_date,
+              durationDays: l.duration_days,
+              reason: l.reason || '',
+              status: l.status || 'pending',
+            })),
+          });
+        }
+
+        if (dbAttendances && dbAttendances.length > 0) {
+          set({
+            attendances: dbAttendances.map((a: any) => ({
+              id: a.id,
+              userId: a.user_id,
+              userName: a.user_name,
+              date: a.date,
+              clockIn: a.clock_in,
+              clockOut: a.clock_out,
+              status: a.status || 'present',
+            })),
+          });
+        }
+      },
+
+      clearMockData: () => {
+        set({ overtimes: [], leaves: [], employees: [], attendances: [] });
+      },
+
 
       addOvertime: (overtime) => set((state) => ({ overtimes: [overtime, ...state.overtimes] })),
       

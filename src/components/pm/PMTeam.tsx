@@ -1,5 +1,5 @@
-'use client';
-import { teamWorkload, tasks, projects } from '@/lib/mock-data';
+import { usePMStore } from '@/lib/store/pmStore';
+import { useUserStore } from '@/lib/store/userStore';
 import { formatCurrency } from '@/lib/utils';
 import { UserCheck, AlertTriangle } from 'lucide-react';
 
@@ -9,6 +9,31 @@ const SUBTEAM_COLORS: Record<string, string> = {
 };
 
 export default function PMTeam() {
+  const { tasks, projects } = usePMStore();
+  const { users: employees } = useUserStore();
+
+  const teamWorkload = employees.map(emp => {
+    const memberTasks = tasks.filter(t => t.assigneeId === emp.id || t.assigneeName === emp.name);
+    const hoursAllocated = memberTasks.reduce((s, t) => s + (t.estimatedHours || 0), 0);
+    const hoursLogged = memberTasks.reduce((s, t) => s + (t.loggedHours || 0), 0);
+    const utilizationPercent = Math.min(100, Math.round((hoursAllocated / 40) * 100));
+    return {
+      employeeId: emp.id,
+      name: emp.name,
+      position: emp.position || emp.roles.join(', '),
+      subTeam: emp.department || 'Brand',
+      weeklyHoursAllocated: hoursAllocated,
+      hoursLogged: hoursLogged,
+      hoursAvailable: Math.max(0, 40 - hoursAllocated),
+      utilizationPercent: utilizationPercent,
+      activeTasksCount: memberTasks.filter(t => t.status !== 'done').length,
+      completedTasks: memberTasks.filter(t => t.status === 'done').length,
+      pendingTasks: memberTasks.filter(t => t.status !== 'done').length,
+      currentFocus: memberTasks.find(t => t.status === 'in_progress')?.title || 'Fokus eksekusi proyek',
+    };
+  });
+
+
   return (
     <div className="space-y-5 fade-in">
       <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Workload dan distribusi tugas anggota tim minggu ini</p>

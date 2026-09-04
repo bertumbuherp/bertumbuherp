@@ -1,10 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { GoogleCalendarSync, GoogleCalendarConnectionState } from '@/lib/services/GoogleCalendarSync';
 import { Calendar, RefreshCw, CheckCircle2, AlertCircle, Link2, Unlink, ExternalLink } from 'lucide-react';
 
 export default function GoogleCalendarSyncWidget() {
+  const { session } = useAuth();
+  const userEmail = session?.email || 'pm@bertumbuh.id';
+
   const [state, setState] = useState<GoogleCalendarConnectionState>({
     isConnected: false,
     autoSyncEnabled: false,
@@ -14,16 +18,16 @@ export default function GoogleCalendarSyncWidget() {
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
-    setState(GoogleCalendarSync.getConnectionState());
-  }, []);
+    setState(GoogleCalendarSync.getConnectionState(userEmail));
+  }, [userEmail]);
 
   const handleConnect = () => {
-    // Real redirection to Google Calendar OAuth / Web App
     window.open('https://calendar.google.com/', '_blank');
-    const newState = GoogleCalendarSync.connect('dewi.pm@bertumbuh.id');
+    const newState = GoogleCalendarSync.connect(userEmail);
     setState(newState);
-    showToast('Berhasil terhubung! Membuka Google Calendar (dewi.pm@bertumbuh.id)...');
+    showToast(`Berhasil terhubung! Membuka Google Calendar (${userEmail})...`);
   };
+
 
   const handleDisconnect = () => {
     const newState = GoogleCalendarSync.disconnect();
@@ -83,8 +87,9 @@ export default function GoogleCalendarSyncWidget() {
               <h4 className="text-sm font-bold text-gray-800">Integrasi Google Calendar (2-Way Sync)</h4>
               {state.isConnected ? (
                 <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                  <CheckCircle2 size={11} /> Terhubung (dewi.pm@bertumbuh.id)
+                  <CheckCircle2 size={11} /> Terhubung ({state.googleEmail || userEmail})
                 </span>
+
               ) : (
                 <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
                   <AlertCircle size={11} /> Belum Terhubung

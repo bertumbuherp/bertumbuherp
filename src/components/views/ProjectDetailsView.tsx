@@ -1,13 +1,14 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import Header from '@/components/layout/Header';
-import { employees, clients } from '@/backend/repositories/mockRepository';
 import { usePMStore } from '@/lib/store/pmStore';
+import { useUserStore } from '@/lib/store/userStore';
+import { useCrmStore } from '@/lib/store/crmStore';
 import { STATUS_LABELS, formatDate, formatCurrency } from '@/lib/utils';
 import { Task, ProjectActivity, TaskStatus } from '@/lib/types';
 import { ArrowLeft, Clock, CheckCircle2, Circle, AlertCircle, LayoutGrid, Calendar as CalendarIcon, Users, X, Link as LinkIcon, Plus, MessageCircle, RefreshCw, Edit3, Trash2, Package } from 'lucide-react';
 import { useState, DragEvent, useEffect, useMemo } from 'react';
+
 
 const STATUS_COLORS: Record<string, string> = {
   on_track: 'var(--green)', at_risk: 'var(--yellow)', delayed: 'var(--red-err)',
@@ -30,8 +31,12 @@ export default function ProjectDetailsView({ projectId }: { projectId: string })
   const router = useRouter();
   const { session } = useAuth();
   const { projects, tasks: globalTasks, updateTaskStatus, addTask, updateTask, deleteTask } = usePMStore();
+  const { users: employees } = useUserStore();
+  const { clients } = useCrmStore();
+
   const project = projects.find(p => p.id === projectId);
   const client = clients.find(c => c.id === project?.clientId);
+
 
   const [activeTab, setActiveTab] = useState<'overview' | 'tasks' | 'addons' | 'gantt' | 'team'>('overview');
   

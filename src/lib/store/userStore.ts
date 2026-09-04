@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { Role } from '@/lib/types';
 import { employees as initialEmployees } from '@/backend/repositories/mockRepository';
 import { useActivityLogStore } from '@/lib/store/activityLogStore';
+import { supabaseDataService } from '@/lib/services/supabaseDataService';
 
 export interface UserAccount {
   id: string;
@@ -22,6 +23,8 @@ export interface UserAccount {
 
 interface UserStoreState {
   users: UserAccount[];
+  fetchFromSupabase: () => Promise<void>;
+  clearMockData: () => void;
   addUser: (userData: Omit<UserAccount, 'id' | 'organizationId' | 'costRate' | 'joinDate'>, actorName: string, actorRole: Role) => void;
   updateUser: (id: string, updates: Partial<UserAccount>, actorName: string, actorRole: Role) => void;
   deleteUser: (id: string, actorName: string, actorRole: Role) => void;
@@ -32,6 +35,32 @@ export const useUserStore = create<UserStoreState>()(
   persist(
     (set, get) => ({
       users: initialEmployees as UserAccount[],
+
+      fetchFromSupabase: async () => {
+        const dbProfiles = await supabaseDataService.getEmployees();
+        if (dbProfiles && dbProfiles.length > 0) {
+          const mappedUsers: UserAccount[] = dbProfiles.map((p: any) => ({
+            id: p.id,
+            organizationId: 'org_bertumbuh',
+            name: p.name,
+            email: p.email,
+            department: p.department || 'Brand',
+            position: p.position || 'Staff',
+            roles: p.roles || ['team_member'],
+            monthlySalary: Number(p.monthly_salary) || 0,
+            standardHoursPerMonth: p.standard_hours_per_month || 160,
+            costRate: Number(p.cost_rate) || 0,
+            billableRate: Number(p.billable_rate) || 0,
+            joinDate: p.created_at ? p.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+            isActive: p.is_active ?? true,
+          }));
+          set({ users: mappedUsers });
+        }
+      },
+
+      clearMockData: () => {
+        set({ users: [] });
+      },
 
       addUser: (userData, actorName, actorRole) => {
         const id = `u_${Date.now()}`;
@@ -44,6 +73,20 @@ export const useUserStore = create<UserStoreState>()(
         };
 
         set((state) => ({ users: [newUser, ...state.users] }));
+
+        supabaseDataService.upsertEmployee({
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          roles: newUser.roles,
+          department: newUser.department,
+          position: newUser.position,
+          monthly_salary: newUser.monthlySalary,
+          standard_hours_per_month: newUser.standardHoursPerMonth,
+          cost_rate: newUser.costRate,
+          billable_rate: newUser.billableRate,
+          is_active: newUser.isActive,
+        });
 
         useActivityLogStore.getState().addLog({
           userId: 'admin',
@@ -59,9 +102,25 @@ export const useUserStore = create<UserStoreState>()(
         const target = get().users.find((u) => u.id === id);
         if (!target) return;
 
+        const updatedUser = { ...target, ...updates };
+
         set((state) => ({
-          users: state.users.map((u) => (u.id === id ? { ...u, ...updates } : u)),
+          users: state.users.map((u) => (u.id === id ? updatedUser : u)),
         }));
+
+        supabaseDataService.upsertEmployee({
+          id: updatedUser.id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          roles: updatedUser.roles,
+          department: updatedUser.department,
+          position: updatedUser.position,
+          monthly_salary: updatedUser.monthlySalary,
+          standard_hours_per_month: updatedUser.standardHoursPerMonth,
+          cost_rate: updatedUser.costRate,
+          billable_rate: updatedUser.billableRate,
+          is_active: updatedUser.isActive,
+        });
 
         useActivityLogStore.getState().addLog({
           userId: 'admin',
@@ -116,3 +175,4 @@ export const useUserStore = create<UserStoreState>()(
     }
   )
 );
+

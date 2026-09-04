@@ -1,6 +1,5 @@
-'use client';
 import { useState } from 'react';
-import { tasks, projects } from '@/lib/mock-data';
+import { usePMStore } from '@/lib/store/pmStore';
 import { formatDate } from '@/lib/utils';
 import { CheckSquare, Square, AlertTriangle, Filter } from 'lucide-react';
 
@@ -9,6 +8,7 @@ const STATUS_OPTIONS = ['all', 'todo', 'in_progress', 'review', 'done'] as const
 const STATUS_LABELS_MAP: Record<string, string> = { all: 'Semua', todo: 'To Do', in_progress: 'In Progress', review: 'Review', done: 'Selesai' };
 
 export default function PMTodoList() {
+  const { tasks, projects } = usePMStore();
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [projectFilter, setProjectFilter] = useState<string>('all');
 
@@ -16,6 +16,7 @@ export default function PMTodoList() {
     (statusFilter === 'all' || t.status === statusFilter) &&
     (projectFilter === 'all' || t.projectId === projectFilter)
   );
+
 
   const grouped = filtered.reduce((acc, t) => {
     const proj = projects.find(p => p.id === t.projectId);
