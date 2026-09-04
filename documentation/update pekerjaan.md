@@ -5,15 +5,16 @@ Dokumen ini mencatat secara sistematis seluruh perubahan file, penambahan fitur,
 
 ## 📅 Tanggal: 04 September 2026
 
-### 5. Pembuatan Standalone Public User Manual Guide (`/manualguide`) per Role & Fungsi
+### 5. Pembuatan Standalone Public User Manual Guide (`/manualguide`) per Role & Fungsi (Minimalist ERP Style)
 
 #### 📄 [NEW] `src/app/manualguide/page.tsx`
-- **Tujuan**: Menyediakan dokumen panduan pengguna (User Manual & SOP) interaktif per role dan per fungsi yang dapat diakses secara publik tanpa login terlebih dahulu (sekaligus dapat diakses oleh pengguna terautentikasi).
+- **Tujuan**: Menyediakan dokumen panduan pengguna (User Manual & SOP) interaktif per role dan per fungsi yang minimalis, elegan, dan selaras 100% dengan tema visual Bertumbuh Agency ERP.
 - **Detail Perubahan**:
-  - **Header Navigasi & Branding**: Menyediakan logo Bertumbuh Agency ERP, tombol "Cetak / Save PDF", dan link "Masuk ke App ERP".
-  - **Banner & Pencarian Real-Time**: Menyediakan bilah pencarian interaktif untuk memfilter instruksi secara presisi berdasarkan kata kunci (misal: *reimbursement, cuti, jurnal, quotation, invoice, lembur, dll.*).
-  - **Filter Tab per 7 Role Utama**: Menyediakan filter `Semua Role`, `👑 Owner / CEO`, `🛡️ Super Admin`, `💰 Finance Manager`, `👥 HR Manager`, `📂 Project Manager (PM)`, `📈 Account Executive (AE)`, dan `💻 Team Member`.
-  - **Kartu Prosedur Interaktif (Accordion)**: Menampilkan rincian instruksi *Langkah demi Langkah*, *Syarat & Permisi Hak Akses*, *Pro-Tips Operasional*, serta *Tombol Pintas (Shortcut)* untuk membuka modul fitur langsung di aplikasi.
+  - **Desain Minimalis & Clean ERP Theme**: Menggantikan latar gelap heavy dengan latar bersih khas Bertumbuh ERP (`bg-[#F8FAFC]`), kartu putih berbatas halus (`bg-white border-slate-200 rounded-xl shadow-2xs`), serta aksen merah brand (`#E8304A`).
+  - **Header Navigasi Ringkas**: Menampilkan logo brand lingkaran merah Bertumbuh, badge versi, tombol "Cetak / PDF", dan tombol "Masuk ke App ERP".
+  - **Bilah Pencarian Minimalis**: Input pencarian bersih dengan icon Lucide untuk menyaring instruksi secara real-time.
+  - **Pill Role Tab Elegan**: Filter role bersih (`Semua Role`, `Owner / CEO`, `Super Admin`, `Finance Manager`, `HR Manager`, `Project Manager`, `Account Executive`, `Team Member`) tanpa emoji ganda yang mengganggu.
+  - **Accordion Langkah-demi-Langkah**: Rincian instruksi bersih dengan penomoran badge gelap (`bg-slate-900 text-white`), syarat akses info box, pro-tips hijau, dan shortcut link langsung ke modul terkait.
 
 #### 📄 [MODIFY] `src/components/layout/Sidebar.tsx`
 - **Tujuan**: Menambahkan opsi navigasi langsung "Panduan Pengguna" untuk seluruh role.
